@@ -1,0 +1,25 @@
+//0.5: SPA App
+
+Title SPA Aplication Web
+
+participant:Browser
+participant:Server
+
+Browser->Server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa
+Server -->Browser: HTML-code
+Browser->Server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+Server-->Browser: main.css
+Browser->Server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+Server-->Browser: main.js
+
+note over Browser: 
+Executing spa.js
+The code requests JSON file from server
+end note
+
+Browser->Server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+Server-->Browser: [{"content":"","date":""},{...}]
+
+note over Browser:
+Browser render display with content from JSON file
+end note

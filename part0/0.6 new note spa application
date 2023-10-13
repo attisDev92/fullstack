@@ -1,0 +1,26 @@
+//0.6: SPA App Request New Note
+
+Title New Note SPA Web Application
+
+participant:Browser
+participant:Server
+
+note over Browser: 
+The web is render with content from JSON file
+end note
+
+Browser->Server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+Server-->Browser: [{"content":"","date":""},{...}]
+
+note over Browser:
+User enter new note on input
+User click on submit button
+The browser executes the event New_note_spa
+end note
+
+Browser->Server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over Server:
+Server execut the request
+Render display with the new note
+end note

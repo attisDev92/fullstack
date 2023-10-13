@@ -1,0 +1,44 @@
+//0.4: nueva nota
+Title Classical Application Web Diagram
+
+participant:Browser
+participant:Server
+
+note over Browser:
+User enter new note on input
+User click on submit button
+The browser executes the event New_note
+end note
+
+Browser->Server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note
+
+note over Server:
+Server execut the request
+server requests a redirect
+end note
+
+Server-->Browser: 302 Found: redirect /exampleapp/notes
+
+note over Server, Browser:
+The website upload once more
+end note
+
+Browser->Server: HTTP GET https://https://studies.cs.helsinki.fi/exampleapp/notes
+Server -->Browser: HTML-code
+Browser->Server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes/main.css
+Server-->Browser: main.css
+Browser->Server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.js
+Server-->Browser: main.js 
+
+note over Browser: 
+Executing main.js
+The code requests JSON file from server
+end note
+
+Browser->Server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+
+note over Server:
+The JSON file content the new note
+end note
+
+Server-->Browser: [{"content":"","date":""},{...}]
