@@ -5,7 +5,7 @@ const root = createRoot(document.getElementById('container'));
 
 const Button = ({ nameBtn, handlerClick}) => <button onClick={handlerClick}>{nameBtn}</button>;
 
-const Display = ({ name, number }) => <p>{name} {number}</p>
+const Statistics = ({ name, number }) => <p>{name} {number}</p>
 
 const App = () => {
   // save clicks of each button to its own state
@@ -39,16 +39,12 @@ const App = () => {
       </div>
       <div>
         <h2>Statiscs</h2>
-        <Display name='good' number={good} />
-        <Display name='neutral' number={neutral} />
-        <Display name='bad' number={bad} />
-        <Display name='Total' number={total}/>
-        <Display name='Averege' number={promedio}/>
-        <Display name='Positive' number={positiveValue}/>
-        {/* total
-            promedio
-            positive
-        */}
+        <Statistics name='good' number={good} />
+        <Statistics name='neutral' number={neutral} />
+        <Statistics name='bad' number={bad} />
+        <Statistics name='Total' number={total}/>
+        <Statistics name='Averege' number={promedio}/>
+        <Statistics name='Positive' number={positiveValue}/>
       </div>
     </div>
   )
