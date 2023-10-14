@@ -7,11 +7,11 @@ const Button = ({ nameBtn, handlerClick}) => <button onClick={handlerClick}>{nam
 
 const Display = ({ name, number }) => <p>{name} {number}</p>
 
-const Statiscs = ({ good, neutral, bad }) => {
+const Statiscs = ({ clicks }) => {
   
-  let total = good + neutral + bad;
-  let promedio = total === 0 ? 0 : (good - bad) / total;
-  let positiveValue = total === 0 ? '0%' : `${(good * 100) / total}%`;
+  let total = clicks.good + clicks.neutral + clicks.bad;
+  let promedio = total === 0 ? 0 : (clicks.good - clicks.bad) / total;
+  let positiveValue = total === 0 ? '0%' : `${(clicks.good * 100) / total}%`;
 
   if (total === 0) {
     return <div>No feedback given</div>
@@ -20,33 +20,46 @@ const Statiscs = ({ good, neutral, bad }) => {
   return (
     <div>
       <h2>Statiscs</h2>
-      <Display name='good' number={good} />
-      <Display name='neutral' number={neutral} />
-      <Display name='bad' number={bad} />
+      <Display name='good' number={clicks.good} />
+      <Display name='neutral' number={clicks.neutral} />
+      <Display name='bad' number={clicks.bad} />
       <Display name='Total' number={total}/>
       <Display name='Averege' number={promedio}/>
       <Display name='Positive' number={positiveValue}/>
     </div>
   )
-
 }
 
 const App = () => {
-  // save clicks of each button to its own state
-  const [good, setGood] = useState(0);
-  const [neutral, setNeutral] = useState(0);
-  const [bad, setBad] = useState(0);
+
+  const [clicks, setClicks] = useState({
+    good: 0,
+    neutral: 0,
+    bad: 0
+  });
 
   const handlerClickGood = () => {
-    setGood(good + 1);
+    const newClicks = {
+      ...clicks,
+      good: clicks.good + 1
+    }
+    setClicks(newClicks);
   };
 
-  const handlerClickNeutra = () => {
-    setNeutral(neutral + 1);
+  const handlerClickNeutral = () => {
+    const newClicks = {
+      ...clicks,
+      neutral: clicks.neutral + 1
+    }
+    setClicks(newClicks);
   };
 
   const handlerClickBad = () => {
-    setBad(bad + 1);
+    const newClicks = {
+      ...clicks,
+      bad: clicks.bad + 1
+    }
+    setClicks(newClicks);
   };
 
   return (
@@ -54,11 +67,11 @@ const App = () => {
       <div>
         <h1>Give feedback</h1>
         <Button nameBtn='good' handlerClick={handlerClickGood} />
-        <Button nameBtn='neutral' handlerClick={handlerClickNeutra} />
+        <Button nameBtn='neutral' handlerClick={handlerClickNeutral} />
         <Button nameBtn='bad' handlerClick={handlerClickBad} />
       </div>
       <div>
-        <Statiscs good={good} neutral={neutral} bad={bad} />
+        <Statiscs clicks={clicks} />
       </div>
     </div>
   )
