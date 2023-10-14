@@ -9,9 +9,13 @@ const Display = ({ name, number }) => <p>{name} {number}</p>
 
 const App = () => {
   // save clicks of each button to its own state
-  const [good, setGood] = useState(0)
-  const [neutral, setNeutral] = useState(0)
-  const [bad, setBad] = useState(0)
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  let total = good + neutral + bad;
+  let promedio = total === 0 ? 0 : (good - bad) / total;
+  let positiveValue = total === 0 ? '0%' : `${(good * 100) / total}%`;
 
   const handlerClickGood = () => {
     setGood(good + 1);
@@ -38,6 +42,13 @@ const App = () => {
         <Display name='good' number={good} />
         <Display name='neutral' number={neutral} />
         <Display name='bad' number={bad} />
+        <Display name='Total' number={total}/>
+        <Display name='Averege' number={promedio}/>
+        <Display name='Positive' number={positiveValue}/>
+        {/* total
+            promedio
+            positive
+        */}
       </div>
     </div>
   )
