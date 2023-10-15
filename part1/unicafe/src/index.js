@@ -5,7 +5,14 @@ const root = createRoot(document.getElementById('container'));
 
 const Button = ({ nameBtn, handlerClick}) => <button onClick={handlerClick}>{nameBtn}</button>;
 
-const Display = ({ name, number }) => <p>{name} {number}</p>
+const Rows = ({ name, number }) => {
+  return (
+    <tr>
+      <td>{name}</td> 
+      <td>{number}</td>
+    </tr>
+  )
+};
 
 const Statiscs = ({ clicks }) => {
   
@@ -20,12 +27,14 @@ const Statiscs = ({ clicks }) => {
   return (
     <div>
       <h2>Statiscs</h2>
-      <Display name='good' number={clicks.good} />
-      <Display name='neutral' number={clicks.neutral} />
-      <Display name='bad' number={clicks.bad} />
-      <Display name='Total' number={total}/>
-      <Display name='Averege' number={promedio}/>
-      <Display name='Positive' number={positiveValue}/>
+      <table>
+        <Rows name='good' number={clicks.good} />
+        <Rows name='neutral' number={clicks.neutral} />
+        <Rows name='bad' number={clicks.bad} />
+        <Rows name='Total' number={total}/>
+        <Rows name='Averege' number={promedio}/>
+        <Rows name='Positive' number={positiveValue}/>
+      </table>
     </div>
   )
 }
