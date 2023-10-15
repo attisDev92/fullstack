@@ -5,20 +5,39 @@ const root = createRoot(document.getElementById('container'));
 
 const Button = ( {name, handlerClick} ) => <button onClick={handlerClick}>{name}</button>;
 
+const MostVotes = () => {
+  
+}
+
 const App = ({ anecdotes }) => {
 
-  const [selected, setSelected] = useState(0);
+  const [numbers, setNumbers] = useState({
+    index: 0,
+    points: Array(anecdotes.length).fill(0)
+  });
+
+  const mostVotes = numbers.points.indexOf(Math.max(...numbers.points));
 
   const nextAnecdote = () => {
     const number = Math.floor(Math.random() * anecdotes.length);
+    setNumbers({ ...numbers, index: number });
+  };
 
-    setSelected(number);
-  }
+  const voteAnecdote = () => {
+    const copyPoints = [...numbers.points];
+    copyPoints[numbers.index] = copyPoints[numbers.index] + 1;
+    setNumbers({ ...numbers, points: copyPoints });
+  };
 
   return (
     <div>
-      <p>{anecdotes[selected]}</p>
+      <h1>Anecdote of the day</h1>
+      <p>{anecdotes[numbers.index]}</p>
+      <p>has {numbers.points[numbers.index]}</p>
       <Button name='next anecdote' handlerClick={nextAnecdote} />
+      <Button name='vote' handlerClick={voteAnecdote} />
+      <h2>Anecdote with most votes</h2>
+      <p>{anecdotes[mostVotes]}</p>
     </div>
   )
 }
