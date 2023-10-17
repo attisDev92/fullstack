@@ -43,8 +43,7 @@ const Course = ({ name, parts }) => {
 };
 
 const App = ({ course }) => {
-
-	return <Course name={course.name} parts={course.parts} />
+	return <Course name={course.name} parts={course.parts} />;
 }
 
 export default App;
