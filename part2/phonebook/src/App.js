@@ -1,32 +1,30 @@
 import {useState} from 'react';
 import Persons from './components/Persons';
-
-const Input = ({ type, onChange }) => <input type={type} onChange={onChange} />;
-
-const Button = ({ nameBtn, type }) => <button type={type}>{nameBtn}</button>;
-
-const Person = ({ person }) => {
-    return (
-       <li>
-            <p>{person.name}</p>
-       </li> 
-    )
-};
+import Input from './components/Input';
+import Button from './components/Button';
+import Person from './components/Person';
 
 const App = () => {
 
     const [persons, setPersons] = useState(Persons);
     const [newName, setNewName] = useState('');
+    const [newPhone, setNewPhone] = useState('');
+    const [findName, setFindName] = useState('');
 
-    const handlerOnChange = (event) => {
+    const handlerOnChangeName = (event) => {
         setNewName(event.target.value);
+    };
+
+    const handlerOnChangePhone = (event) => {
+        setNewPhone(event.target.value);
     };
 
     const handlerOnSubmit = (event) => {
         event.preventDefault();
         
         const objectName = {
-            name: newName
+            name: newName,
+            phone: newPhone
         };
 
         if (persons.some(object => object.name === objectName.name)) {
@@ -38,24 +36,41 @@ const App = () => {
             objectName
         ];
 
-        setPersons(newPersons)
-        setNewName('')
+        setPersons(newPersons);
+        setNewName('');
+        setNewPhone('');
     }
+
+    const handlerOnChangeFilter = (event) => {
+        const nameFind = event.target.value;
+
+        setFindName(nameFind);
+    }
+
+    const filterPersons = !findName ? persons : persons.filter(person => person.name.toLowerCase() === findName.toLocaleLowerCase());
+
 
     return (
         <div>
             <h1> PHONEBOOK </h1>
             <div>
-                <form onSubmit={handlerOnSubmit}>
-                    <label>name: </label>
-                    <Input type='text' onChange={handlerOnChange}/>
-                    <Button nameBtn="add" type="onSubmit"/>
-                </form>                
+            <form >
+                <labe>filter shwn with </labe>
+                <Input type='text' onChange={handlerOnChangeFilter}/>
+            </form>
             </div>
+            <h2>Add new contact</h2>
+            <form onSubmit={handlerOnSubmit}>
+                <label>name: </label>
+                <Input type='text' onChange={handlerOnChangeName} /> <br/>
+                <label>phone: </label>
+                <Input type='tel' onChange={handlerOnChangePhone} /> <br/>
+                <Button nameBtn="add" type="onSubmit" /> <br/>
+            </form>                
             <h2> Numbers </h2>
             <ul>
-                {persons.map(
-                    person => <Person key={person.name} person={person}/>)
+                {filterPersons.map(
+                    person => <Person key={Person.name} person={person}/>)
                 }
             </ul>
             
