@@ -1,13 +1,13 @@
 import {useState} from 'react';
-import Persons from './components/Persons';
-import Input from './components/Input';
-import Button from './components/Button';
-import Person from './components/Person';
+import PersonsList from './components/PersonsList';
 import FormFilter from './components/FormFilter';
+import Persons from './components/Persons';
+import FormNewContact from './components/FormNewContact'
+
 
 const App = () => {
 
-    const [persons, setPersons] = useState(Persons);
+    const [persons, setPersons] = useState(PersonsList);
     const [newName, setNewName] = useState('');
     const [newPhone, setNewPhone] = useState('');
     const [findName, setFindName] = useState('');
@@ -58,26 +58,28 @@ const App = () => {
     return (
         <div>
             <h1> PHONEBOOK </h1>
-            <div>
-                <FormFilter labelText='filter shwn with' onChange={handlerOnChangeFilter} />
-            </div>
+
+            <FormFilter 
+                labelText='filter shwn with' 
+                onChange={handlerOnChangeFilter} 
+            />
+
             <h2>Add new contact</h2>
-            <form onSubmit={handlerOnSubmit}>
-                <label>name: </label>
-                <Input type='text' onChange={handlerOnChangeName} value={newName} /> <br/>
-                <label>phone: </label>
-                <Input type='tel' onChange={handlerOnChangePhone} value={newPhone} /> <br/>
-                <Button nameBtn="add" type="onSubmit" /> <br/>
-            </form>                
+
+            <FormNewContact 
+                onSubmit={handlerOnSubmit} 
+                onChangeName={handlerOnChangeName} 
+                valueNameInput={newName} 
+                onChangePhone={handlerOnChangePhone} 
+                valuePhoneInput={newPhone} 
+            />
+
             <h2> Numbers </h2>
-            <ul>
-                {filterPersons.map(
-                    person => <Person key={Person.name} person={person}/>)
-                }
-            </ul>
+
+            <Persons persons={filterPersons} />
+
         </div>
     )
-
 }
 
 export default App;

@@ -1,9 +1,11 @@
+import Input from "./Input";
+
 const FormFilter = ({ labelText, onChange }) => {
     
     return (
         <form >
-            <labe>{labelText} </labe>
-            <input type='text' onChange={onChange} />
+            <label>{labelText} </label>
+            <Input type='text' onChange={onChange} />
         </form >
     )
 };
