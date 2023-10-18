@@ -1,16 +1,8 @@
-import Courses from './Courses';
 
-const Header = ({ name }) => <h1>{name}</h1>;
 
-const Total = ({ parts }) => {
-	return (
-		<p>
-			<strong> Number of exercises {
-			parts.reduce((total, part) => total + part.exercises, 0)
-			}</strong>
-		</p>
-	)
-}
+const Header = ({ name }) => <h1>{name}</h1>
+
+// const Total = ({ sum }) => <p>Number of exercises {sum}</p>;
 
 const Part = ({ name, exercises }) => {
 	return (
@@ -20,38 +12,32 @@ const Part = ({ name, exercises }) => {
 	)
 }
 
-const Content = ({ parts }) => {
+const Content = ({ name, exercises }) => {
 	return (
 	<div>
-		{
-			parts.map(
-				part => <Part key={part.id} name={part.name} exercises={part.exercises} />
-			)
-		}     
+		<Part
+			name={name} exercises={exercises} />	aS
+			
+		<Part
+			name={name} exercises={exercises} />
+		<Part
+			name={name} exercises={exercises} />      
 	</div>
 	)
 }
 
-const Course = ({ courses }) => {
+const Course = ({ name, parts }) => {
 	return (
 		<div>
-			{
-				courses.map( course => {
-					return (
-						<div key={course.id}>
-							<Header name={course.name}/>
-							<Content parts={course.parts}/>
-							<Total parts={course.parts} />
-						</div>
-					)
-				})
-			}
-		</div>	
+			<Header name={name}/>
+			<Content parts={parts}/>
+		</div>
 	);
 };
 
-const App = () => {
-	return <Course courses={Courses} />;
+const App = ({ course }) => {
+
+	return <Course name={course.name}/>
 }
 
 export default App;

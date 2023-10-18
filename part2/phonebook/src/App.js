@@ -1,16 +1,25 @@
-import {useState} from 'react';
-import PersonsList from './components/PersonsList';
+import { useState, useEffect } from 'react';
 import FormFilter from './components/FormFilter';
 import Persons from './components/Persons';
 import FormNewContact from './components/FormNewContact'
+import axios from 'axios';
 
 
 const App = () => {
 
-    const [persons, setPersons] = useState(PersonsList);
+    const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState('');
     const [newPhone, setNewPhone] = useState('');
     const [findName, setFindName] = useState('');
+
+    useEffect(() => {
+        axios
+            .get("http://localhost:3001/persons")
+            .then((response) => {
+
+                setPersons(response.data);
+            })
+    }, []);
 
     const handlerOnChangeName = (event) => {
         setNewName(event.target.value);
