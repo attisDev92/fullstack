@@ -3,6 +3,7 @@ import Persons from './components/Persons';
 import Input from './components/Input';
 import Button from './components/Button';
 import Person from './components/Person';
+import FormFilter from './components/FormFilter';
 
 const App = () => {
 
@@ -47,24 +48,25 @@ const App = () => {
         setFindName(nameFind);
     }
 
-    const filterPersons = !findName ? persons : persons.filter(person => person.name.toLowerCase() === findName.toLocaleLowerCase());
+    const filterPersons = !findName
+        ? persons
+        : persons.filter((person) =>
+        person.name.toLowerCase().startsWith(findName.toLowerCase())
+        );
 
 
     return (
         <div>
             <h1> PHONEBOOK </h1>
             <div>
-            <form >
-                <labe>filter shwn with </labe>
-                <Input type='text' onChange={handlerOnChangeFilter}/>
-            </form>
+                <FormFilter labelText='filter shwn with' onChange={handlerOnChangeFilter} />
             </div>
             <h2>Add new contact</h2>
             <form onSubmit={handlerOnSubmit}>
                 <label>name: </label>
-                <Input type='text' onChange={handlerOnChangeName} /> <br/>
+                <Input type='text' onChange={handlerOnChangeName} value={newName} /> <br/>
                 <label>phone: </label>
-                <Input type='tel' onChange={handlerOnChangePhone} /> <br/>
+                <Input type='tel' onChange={handlerOnChangePhone} value={newPhone} /> <br/>
                 <Button nameBtn="add" type="onSubmit" /> <br/>
             </form>                
             <h2> Numbers </h2>
@@ -73,7 +75,6 @@ const App = () => {
                     person => <Person key={Person.name} person={person}/>)
                 }
             </ul>
-            
         </div>
     )
 
