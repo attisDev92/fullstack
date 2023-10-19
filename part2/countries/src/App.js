@@ -11,7 +11,6 @@ const App = () => {
     const [findCountry, setFindCountry] = useState('');
 
     useEffect(() => {
-        
         axios
             .get("https://restcountries.com/v3.1/all")
             .then((response) => {
@@ -24,6 +23,13 @@ const App = () => {
         setFindCountry(newFindCountry);
     }
 
+
+    const handlerShow = (value) => {
+        const selectValue = value;
+        
+        setFindCountry(selectValue);
+    }
+
     const listCountries = countries.filter((country) => country.name.common.toLowerCase().startsWith(findCountry.toLowerCase())) ;
 
     const renderCountries = () => {
@@ -32,7 +38,7 @@ const App = () => {
         } else if (listCountries.length === 1) {
             return <CountryInfo listCountries={listCountries} />;
         } else {
-            return <ListCountries listCountries={listCountries} />;
+            return <ListCountries listCountries={listCountries} onClick={handlerShow}/>;
         }
     }
 
