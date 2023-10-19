@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import FormFilter from './components/FormFilter';
 import Persons from './components/Persons';
-import FormNewContact from './components/FormNewContact'
-import axios from 'axios';
+import FormNewContact from './components/FormNewContact';
+import services from './services';
 
 
 const App = () => {
@@ -13,11 +13,10 @@ const App = () => {
     const [findName, setFindName] = useState('');
 
     useEffect(() => {
-        axios
-            .get("http://localhost:3001/persons")
-            .then((response) => {
-
-                setPersons(response.data);
+        services
+            .getAll()
+            .then((initialData) => {
+                setPersons(initialData);
             })
     }, []);
 
@@ -31,24 +30,32 @@ const App = () => {
 
     const handlerOnSubmit = (event) => {
         event.preventDefault();
-        
+
+        if(newName.length === 0 || newPhone.length === 0) {
+            return alert("Please fill in both name and phone number.");
+        }
+
         const objectName = {
             name: newName,
-            phone: newPhone
+            number: newPhone
         };
 
         if (persons.some(object => object.name === objectName.name)) {
             return alert(`${newName} it already added to phonebook`);
         }
 
-        const newPersons = [
-            ...persons,
-            objectName
-        ];
-
-        setPersons(newPersons);
+        services
+            .create(objectName)
+            .then(createContact => {
+                const newPersons = [
+                    ...persons,
+                    createContact
+                ];
+                setPersons(newPersons);  
+            });
+        
         setNewName('');
-        setNewPhone('');
+        setNewPhone('');  
     }
 
     const handlerOnChangeFilter = (event) => {
@@ -69,7 +76,7 @@ const App = () => {
             <h1> PHONEBOOK </h1>
 
             <FormFilter 
-                labelText='filter shwn with' 
+                labelText='filter show with' 
                 onChange={handlerOnChangeFilter} 
             />
 
