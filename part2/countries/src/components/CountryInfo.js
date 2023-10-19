@@ -1,27 +1,30 @@
-const CountryInfo = ({ listCountries }) => {
-    
-    if (listCountries.length === 0) {
-        return <div>No country found.</div>;
+import CountryData from './CountryData';
+import CountryWeather from './CountryWeather';
+
+const CountryInfo = ({ country, infoWeather }) => {
+
+    const countryData = () => {
+        if (!country || !country.name || !country.name.common) {
+            return <div>No country found.</div>;
+        } else {
+            return <CountryData country={country} />;
+        }
     }
 
-    const country = listCountries[0];
+    const countryWeather = () => {
+        if (!infoWeather || !infoWeather.location) {
+            return <div>No weather info.</div>;
+        } else {
+            return <CountryWeather infoWeather={infoWeather} />;
+        }
+    }
 
     return (
         <div>
-            <h2>{country.name.common}</h2>
-
-            <p>capital {country.capital[0]}</p>
-            <p>population {country.population}</p>
-
-            <h2>Lengueages</h2>
-            <ul>
-                { Object.values(country.languages).map((lenguage) => (
-                <li key={lenguage}>{lenguage}</li>
-                ))}
-            </ul>
-            <img src={country.flags.png} alt={country.name.common}></img>
+            {countryData()}
+            {countryWeather()}
         </div>
-    )
+    );
 };
 
 export default CountryInfo;

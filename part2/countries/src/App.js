@@ -4,49 +4,62 @@ import FormFind from './components/FormFind';
 import ListCountries from './components/ListCountries';
 import CountryInfo from './components/CountryInfo';
 
-
 const App = () => {
-
     const [countries, setCountries] = useState([]);
     const [findCountry, setFindCountry] = useState('');
+    const [weatherInfo, setWeatherInfo] = useState([]);
 
     useEffect(() => {
         axios
             .get("https://restcountries.com/v3.1/all")
             .then((response) => {
                 setCountries(response.data);
-            });
+            })
+            .catch(error => {
+                console.eror(error);
+            })
     }, []);
 
-    const handlerOnChage = (event) => {
+    const handlerOnChange = (event) => {
         const newFindCountry = event.target.value;
         setFindCountry(newFindCountry);
     }
 
-
     const handlerShow = (value) => {
-        const selectValue = value;
-        
-        setFindCountry(selectValue);
+        setFindCountry(value);
     }
 
-    const listCountries = countries.filter((country) => country.name.common.toLowerCase().startsWith(findCountry.toLowerCase())) ;
+    const listCountries = countries.filter((country) =>
+        country.name.common.toLowerCase().startsWith(findCountry.toLowerCase())
+    );
+
+    const getWeather = () => {
+        const apiWeather = `http://api.weatherstack.com/current?access_key=${process.env.REACT_APP_API_WEATHER}&query=${findCountry}`;
+        axios
+            .get(apiWeather)
+            .then((response) => {
+                setWeatherInfo(response.data);
+            })
+            .catch(error => {
+                console.error(error);
+            }) 
+    }
 
     const renderCountries = () => {
         if (listCountries.length > 10) {
-            return "too many matches, specify another filter";
+            return "Too many matches, specify another filter.";
         } else if (listCountries.length === 1) {
-            return <CountryInfo listCountries={listCountries} />;
+            getWeather();
+            return <CountryInfo country={listCountries[0]} infoWeather={weatherInfo} />;
         } else {
-            return <ListCountries listCountries={listCountries} onClick={handlerShow}/>;
+            return <ListCountries countries={listCountries} onClick={handlerShow} />;
         }
     }
 
     return (
         <div>
             <h1>Countries</h1>
-
-            <FormFind labelText='find countries' onChange={handlerOnChage} />
+            <FormFind labelText="Find countries" onChange={handlerOnChange} />
             <div>
                 {renderCountries()}
             </div>

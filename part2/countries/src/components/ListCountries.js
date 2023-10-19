@@ -1,9 +1,9 @@
 import CountryName from './CountryName';
 
-const ListCountries = ({ listCountries, onClick }) => {
+const ListCountries = ({ countries, onClick }) => {
     return (
         <ul>
-            { listCountries.map(
+            { countries.map(
                 country => <CountryName 
                 valueBtn={country.name.common} 
                 key={country.name.common} 
