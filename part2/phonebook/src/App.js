@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import FormFilter from './components/FormFilter';
 import Persons from './components/Persons';
 import FormNewContact from './components/FormNewContact';
-import services from './services';
-
+import StatusMessage from './components/StatusMessage';
+import {getAll, create, update, destroy} from './services';
 
 const App = () => {
 
@@ -11,13 +11,12 @@ const App = () => {
     const [newName, setNewName] = useState('');
     const [newPhone, setNewPhone] = useState('');
     const [findName, setFindName] = useState('');
+    const [errorMessage, setErrorMessage] = useState('create, update or delete contacts');
 
     useEffect(() => {
-        services
-            .getAll()
-            .then((initialData) => {
-                setPersons(initialData);
-            })
+        getAll().then((initialData) => {
+            setPersons(initialData);
+        })
     }, []);
 
     const handlerOnChangeName = (event) => {
@@ -47,26 +46,30 @@ const App = () => {
             const updateConfirm = window.confirm("you want to update this contact");
             const personToUpdate = persons.find(person => person.name === objectPerson.name);
             if (updateConfirm) {
-                services
-                    .update(personToUpdate.id, objectPerson)
-                    .then(updateContact => {
-                        const currentPersons = persons.filter(person => person.id !== personToUpdate.id);   
-                        const newPersons = [
-                            ...currentPersons,
-                            updateContact
-                        ];
-                        setPersons(newPersons);
-                    });
+                update(personToUpdate.id, objectPerson).then(updateContact => {
+                    const currentPersons = persons.filter(person => person.id !== personToUpdate.id);   
+                    const newPersons = [
+                        ...currentPersons,
+                        updateContact
+                    ];
+                    setPersons(newPersons);
+                    setErrorMessage(`update ${objectPerson.name} number to ${objectPerson.number}`);
+                    setTimeout(() => {
+                        setErrorMessage('create, update or delete contacts')
+                    }, 5000);
+                });
             }
         } else {
-            services
-                .create(objectPerson)
-                .then(createContact => {
-                    const newPersons = [
-                        ...persons,
-                        createContact
-                    ];
-                    setPersons(newPersons);  
+            create(objectPerson).then(createContact => {
+                const newPersons = [
+                    ...persons,
+                    createContact
+                ];
+                setPersons(newPersons);
+                setErrorMessage(`added ${objectPerson.name}`)
+                setTimeout(() => {
+                    setErrorMessage('create, update or delete contacts')
+                }, 5000);
             });
         }
         setNewName('');
@@ -90,10 +93,14 @@ const App = () => {
         const deleteConfirm = window.confirm("Are you sure delete this contact");
 
         if(deleteConfirm){ 
-            services.destroy(id)
-            .then(() => {
+            destroy(id).then(() => {
                 const currentPersons = persons.filter(person => person.id !== id);
+                const deletePerson = persons.find(person => person.id === id);
                 setPersons(currentPersons);
+                setErrorMessage(`you delete ${deletePerson.name}`);
+                setTimeout(() => {
+                    setErrorMessage('create, update or delete contacts');
+                }, 5000);
             })
         }
     }
@@ -106,6 +113,8 @@ const App = () => {
                 labelText='filter show with' 
                 onChange={handlerOnChangeFilter} 
             />
+
+            <StatusMessage status={errorMessage}/>
 
             <h2>Add new contact</h2>
 
