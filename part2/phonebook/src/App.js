@@ -70,6 +70,19 @@ const App = () => {
         person.name.toLowerCase().startsWith(findName.toLowerCase())
         );
 
+    const handlerDeleteOn = (id) => {
+        
+        const deleteConfirm = window.confirm("Are you sure delete this contact");
+
+        if(deleteConfirm){ 
+            services.destroy(id)
+            .then(() => {
+                const currentPersons = persons.filter(person => person.id !== id);
+                setPersons(currentPersons);
+            })
+        }
+    }
+
 
     return (
         <div>
@@ -87,12 +100,15 @@ const App = () => {
                 onChangeName={handlerOnChangeName} 
                 valueNameInput={newName} 
                 onChangePhone={handlerOnChangePhone} 
-                valuePhoneInput={newPhone} 
+                valuePhoneInput={newPhone}
             />
 
             <h2> Numbers </h2>
 
-            <Persons persons={filterPersons} />
+            <Persons 
+                persons={filterPersons} 
+                handlerDelete={handlerDeleteOn}
+            />
 
         </div>
     )
