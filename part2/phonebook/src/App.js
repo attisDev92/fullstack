@@ -35,27 +35,42 @@ const App = () => {
             return alert("Please fill in both name and phone number.");
         }
 
-        const objectName = {
+        const objectPerson = {
             name: newName,
             number: newPhone
         };
 
-        if (persons.some(object => object.name === objectName.name)) {
+        if (persons.some(object => object.name === objectPerson.name && object.number === objectPerson.number)) {
             return alert(`${newName} it already added to phonebook`);
-        }
-
-        services
-            .create(objectName)
-            .then(createContact => {
-                const newPersons = [
-                    ...persons,
-                    createContact
-                ];
-                setPersons(newPersons);  
+        } else if (persons.some(object => object.name === objectPerson.name && object.number !== objectPerson.number)) {
+            
+            const updateConfirm = window.confirm("you want to update this contact");
+            const personToUpdate = persons.find(person => person.name === objectPerson.name);
+            if (updateConfirm) {
+                services
+                    .update(personToUpdate.id, objectPerson)
+                    .then(updateContact => {
+                        const currentPersons = persons.filter(person => person.id !== personToUpdate.id);   
+                        const newPersons = [
+                            ...currentPersons,
+                            updateContact
+                        ];
+                        setPersons(newPersons);
+                    });
+            }
+        } else {
+            services
+                .create(objectPerson)
+                .then(createContact => {
+                    const newPersons = [
+                        ...persons,
+                        createContact
+                    ];
+                    setPersons(newPersons);  
             });
-        
+        }
         setNewName('');
-        setNewPhone('');  
+        setNewPhone('');
     }
 
     const handlerOnChangeFilter = (event) => {
@@ -82,7 +97,6 @@ const App = () => {
             })
         }
     }
-
 
     return (
         <div>
