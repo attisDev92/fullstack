@@ -1,7 +1,7 @@
-const StatusMessage = ({ status }) => {
+const StatusMessage = ({ text, styleStatus }) => {
     return (
-        <div className='status'>
-            <p>{status}</p>
+        <div className={ styleStatus }>
+            <p>{text}</p>
         </div>
     )
 }

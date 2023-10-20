@@ -11,7 +11,8 @@ const App = () => {
     const [newName, setNewName] = useState('');
     const [newPhone, setNewPhone] = useState('');
     const [findName, setFindName] = useState('');
-    const [errorMessage, setErrorMessage] = useState('create, update or delete contacts');
+    const [statusApp, setStatusApp] = useState('create, update or delete contacts');
+    const [styleStatus, setStyleStatus] = useState('status');
 
     useEffect(() => {
         getAll().then((initialData) => {
@@ -53,11 +54,20 @@ const App = () => {
                         updateContact
                     ];
                     setPersons(newPersons);
-                    setErrorMessage(`update ${objectPerson.name} number to ${objectPerson.number}`);
+                    setStatusApp(`update ${objectPerson.name} number to ${objectPerson.number}`);
                     setTimeout(() => {
-                        setErrorMessage('create, update or delete contacts')
+                        setStatusApp('create, update or delete contacts')
                     }, 5000);
-                });
+                })
+                .catch(error => {
+                    console.error(error)
+                    setStyleStatus('error');
+                    setStatusApp(`information of ${objectPerson.name} has already been removed from server` );
+                    setTimeout(() => {
+                        setStyleStatus('status')
+                        setStatusApp('create, update or delete contacts')
+                    },5000);
+                })
             }
         } else {
             create(objectPerson).then(createContact => {
@@ -66,9 +76,9 @@ const App = () => {
                     createContact
                 ];
                 setPersons(newPersons);
-                setErrorMessage(`added ${objectPerson.name}`)
+                setStatusApp(`added ${objectPerson.name}`)
                 setTimeout(() => {
-                    setErrorMessage('create, update or delete contacts')
+                    setStatusApp('create, update or delete contacts')
                 }, 5000);
             });
         }
@@ -97,9 +107,9 @@ const App = () => {
                 const currentPersons = persons.filter(person => person.id !== id);
                 const deletePerson = persons.find(person => person.id === id);
                 setPersons(currentPersons);
-                setErrorMessage(`you delete ${deletePerson.name}`);
+                setStatusApp(`you delete ${deletePerson.name}`);
                 setTimeout(() => {
-                    setErrorMessage('create, update or delete contacts');
+                    setStatusApp('create, update or delete contacts');
                 }, 5000);
             })
         }
@@ -114,7 +124,10 @@ const App = () => {
                 onChange={handlerOnChangeFilter} 
             />
 
-            <StatusMessage status={errorMessage}/>
+            <StatusMessage 
+                text={statusApp}
+                styleStatus={styleStatus}
+            />
 
             <h2>Add new contact</h2>
 
