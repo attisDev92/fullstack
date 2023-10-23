@@ -5,8 +5,18 @@ const app = express();
 app.use(express.json());
 
 app.get('/api/persons', (req, res) => {
+    
     res.json(persons);    
 });
+
+app.get('/info', (req, res) => {
+
+    console.log(req)
+
+    const numberRegisters = `<p> Phonebook has info for ${persons.length} people</p>`;
+    const time = new Date();
+    res.send(numberRegisters + time);
+})
 
 
 persons = [
