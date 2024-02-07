@@ -1,6 +1,6 @@
-const favoriteBlog = require('../utils/list_helpers').favoriteBlog;
+const {mostBlogs, mostLikes} = require('../utils/list_helpers');
 
-describe('The favorite blog is', () => {
+describe('authors with most likes and most blogs', () => {
     const blogs = [
         {
             _id: "5a422a851b54a676234d17f7",
@@ -52,18 +52,26 @@ describe('The favorite blog is', () => {
         }
     ];
 
-    test('Is the name blog with more likes', () => {
-        const result = favoriteBlog(blogs);
-        expect(result).toEqual(
-            {
-                _id: "5a422b3a1b54a676234d17f9",
-                title: "Canonical string reduction",
-                author: "Edsger W. Dijkstra",
-                url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-                likes: 12,
-                __v: 0
-            }
-        );
+    test('Author with most blogs from collection', () => {
+        const result = mostBlogs(blogs);
+
+        const expectResult = {
+            author: "Robert C. Martin",
+            blogs: 3
+        }
+
+        expect(result).toEqual(expectResult);
+    });
+
+    test('Author with most likes from collection', () => {
+        const result = mostLikes(blogs);
+
+        const expectResult = {
+            author: "Edsger W. Dijkstra",
+            likes: 17
+        };
+
+        expect(result).toEqual(expectResult);
     });
 
 }); 
