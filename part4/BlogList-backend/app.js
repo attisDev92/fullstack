@@ -1,21 +1,23 @@
 const config = require('./utils/config');
 const express = require('express');
+require('express-async-errors');
 const app = express();
 const cors = require('cors');
 const blogsRouter = require('./controllers/blogs');
 const middleware = require('./utils/middleware');
 const logger = require('./utils/logger');
 const mongoose = require('mongoose');
-const morgan = require('morgan')
+const morgan = require('morgan');
+mongoose.set('strictQuery', false);
 
 logger.info('connecting to ', config.MONGOBD);
 
 mongoose.connect(config.MONGOBD)
     .then(() => {
-        logger.info('connected to MonfoDB')
+        logger.info('connected to MongoDB')
     })
     .catch(error => {
-        logger.catch('error connecting database ', error.message)
+        logger.error('error connecting database ', error.message)
     });
 
 app.use(morgan(':method :url :status :response-time ms'));
@@ -30,4 +32,3 @@ app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 
 module.exports = app;
-
