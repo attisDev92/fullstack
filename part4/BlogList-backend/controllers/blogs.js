@@ -6,9 +6,10 @@ blogsRouter.get('/', async(req, res) => {
     res.json(blogs);
 });
 
-blogsRouter.post('/', async(req, res, next) => {
-        
-    const { body } = req;
+blogsRouter.post('/', async(req, res) => {
+
+    const body = req.body;
+
     const blog = new Blog({
         title: body.title,
         author: body.author,

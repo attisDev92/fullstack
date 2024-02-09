@@ -7,7 +7,7 @@ const api = supertest(app);
 
 const Blog = require('../models/blog');
 
-beforeAll( async() => {
+beforeEach( async() => {
     await Blog.deleteMany({ });
     
     for(let blog of helper.initialBlogs) {
@@ -33,6 +33,54 @@ describe('test for verify the response properties', () => {
 
         expect(response.body.some(obj => obj.id)).toBeDefined()
     });
+
+});
+
+describe('tests for post method', () => {
+
+    test('create a new blog', async() => {
+        
+        await api
+            .post('/api/blogs')
+            .send(helper.newBlog)
+            .expect(200)
+
+        const blogs = await helper.blogsInDB()
+        expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
+
+        const titles = blogs.map(blog => blog.title)
+        expect(titles).toContain(helper.newBlog.title)
+    });
+
+    test('post blog without likes', async() => {
+
+        await api
+            .post('/api/blogs')
+            .send(helper.blogWithoutLikes)
+            .expect(200)
+
+        const blogs = await helper.blogsInDB()
+        expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
+
+        const blogSaved = blogs.find(blog => blog.title === "Blog without likes")
+        expect(blogSaved).toHaveProperty('likes')
+        expect(blogSaved.likes).toEqual(0);
+    });
+
+    test('post without tittle or likes property', async() => {
+
+        await api
+            .post('/api/blogs')
+            .send(helper.incompleteBlog)
+            .expect(400)
+
+        const blogs = await helper.blogsInDB()
+        expect(blogs).toHaveLength(helper.initialBlogs.length)
+
+        const urls = blogs.map(blog => blog.url)
+        console.log(urls)
+        expect(urls).not.toContain('http://notAGoodRequest.html')
+    })
 
 });
 
