@@ -84,6 +84,51 @@ describe('tests for post method', () => {
 
 });
 
+describe('tests for updated information of blogs', () => {
+
+    test('updated likes number for the first blog from 7 to 15', async() => {
+
+        const blogsAtStart = await helper.blogsInDB()
+        const blogToUpdate = blogsAtStart[0]
+
+        const blogToUpdateLikes = {
+            likes: 15
+        }
+
+        await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(blogToUpdateLikes)
+            .expect(200)
+
+        const blogsUpdated = await helper.blogsInDB()
+        const blogUpdated = blogsUpdated.find(blog => blog.title === 'React patterns')
+        expect(blogUpdated.likes).toBe(15)
+
+    });
+
+});
+
+describe('delete a blog by delete method', () => {
+
+    test('delete a post', async() => {
+
+        const blogsAtStart = await helper.blogsInDB()
+        const blogToDelete = blogsAtStart[0]
+
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .expect(204)
+
+        const blogsAtEnd = await helper.blogsInDB()
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+
+        const titles = blogsAtEnd.map(blog => blog.title)
+        expect(titles).not.toContain(blogToDelete.title)
+    });
+
+});
+
+
 afterAll(() => {
     mongoose.connection.close()
 });

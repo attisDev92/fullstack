@@ -53,7 +53,7 @@ const blogWithoutLikes = {
 }
 
 const incompleteBlog = {
-    url: "https://attisdev.com",
+    url: "https://notAGoodObject.com",
     likes: 9
 }
 
