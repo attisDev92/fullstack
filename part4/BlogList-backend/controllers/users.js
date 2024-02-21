@@ -12,8 +12,11 @@ userRouter.get('/', async(req,res) => {
 userRouter.post('/', async(req, res) => {
     const { username, name, password } = req.body
 
-    const saltRounds = 10
+    if(password.length <= 2) {
+        return res.status(400).end()
+    }
 
+    const saltRounds = 10
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
     const user = new User({

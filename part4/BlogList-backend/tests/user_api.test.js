@@ -1,18 +1,19 @@
 const supertest = require('supertest')
-const bcrypt = require('bcrypt')
 const app = require('../app')
-
-const User = require('../models/User');
+const helpers = require('./test_helpers')
+const bcrypt = require('bcrypt')
+const User = require('../models/User')
 
 const api = supertest(app)
 
 beforeEach( async() => {
     await User.deleteMany({ })
 
+    const passwordHash = await bcrypt.hash('password', 10)
     const user = {
         username: 'firstUser',
         name: 'first user name',
-        password: 'password'
+        passwordHash
     }
 
     const initialUser = new User(user)
@@ -23,7 +24,7 @@ describe('Tests for create new user', () => {
 
     test('create new user', async() => {
         
-        const usersAtStart = User.find({})
+        const usersAtStart = await helpers.usersInDB()
 
         const newUser = {
             username: 'UsernameTest',
@@ -36,8 +37,34 @@ describe('Tests for create new user', () => {
             .send(newUser)
             .expect(201)
             .expect('content-type', /application\/json/)
-            
+
+        const usersAtEnd = await helpers.usersInDB()
+        expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
         
+        const usersNames = usersAtEnd.map(user => user.username)
+        expect(usersNames).toContain(newUser.username)
+
+    })
+
+})
+
+describe('fails request to users api', () => {
+
+    test('no username request', async() => {
+        const usersAtStart = await helpers.usersInDB()
+
+        const userWrong = {
+            name: 'Name Test',
+            password: 'password'
+        }
+
+        await api
+            .post('/api/users')
+            .send(userWrong)
+            .expect(400)
+
+        const usersAtEnd = await helpers.usersInDB()
+        expect(usersAtEnd).toEqual(usersAtStart)
     })
 
 })
