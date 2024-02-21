@@ -1,16 +1,18 @@
-const config = require('./utils/config');
-const express = require('express');
-require('express-async-errors');
-const app = express();
-const cors = require('cors');
-const blogsRouter = require('./controllers/blogs');
-const middleware = require('./utils/middleware');
-const logger = require('./utils/logger');
-const mongoose = require('mongoose');
-const morgan = require('morgan');
-mongoose.set('strictQuery', false);
+const config = require('./utils/config')
+const express = require('express')
+require('express-async-errors')
+const app = express()
+const cors = require('cors')
+const blogsRouter = require('./controllers/blogs')
+const usersRouter = require('./controllers/users')
+const middleware = require('./middlewares/middleware')
+const errorHandler = require('./middlewares/errorHandler')
+const logger = require('./utils/logger')
+const mongoose = require('mongoose')
+const morgan = require('morgan')
+mongoose.set('strictQuery', false)
 
-logger.info('connecting to ', config.MONGOBD);
+logger.info('connecting to ', config.MONGOBD)
 
 mongoose.connect(config.MONGOBD)
     .then(() => {
@@ -18,17 +20,18 @@ mongoose.connect(config.MONGOBD)
     })
     .catch(error => {
         logger.error('error connecting database ', error.message)
-    });
+    })
 
-app.use(morgan(':method :url :status :response-time ms'));
-app.use(cors());
-app.use(express.static('build'));
-app.use(express.json());
-app.use(middleware.requestLogger);
+app.use(morgan(':method :url :status :response-time ms'))
+app.use(cors())
+app.use(express.static('build'))
+app.use(express.json())
+app.use(middleware.requestLogger)
 
-app.use('/api/blogs', blogsRouter);
+app.use('/api/users', usersRouter)
+app.use('/api/blogs', blogsRouter)
 
-app.use(middleware.unknownEndpoint);
-app.use(middleware.errorHandler);
+app.use(middleware.unknownEndpoint)
+app.use(errorHandler)
 
-module.exports = app;
+module.exports = app
