@@ -69,3 +69,18 @@ describe('fails request to users api', () => {
 
 })
 
+describe('use api with method get', () => {
+    test('get de users', async() => {
+
+        const users = await api
+            .get('/api/users')
+            .expect(200)
+            .expect('content-tyoe', /application\/json/)
+        console.log(users)
+
+        usersName = users.map(user => user.username)
+        expect(usersName).toContain('firstUser')
+
+    })
+})
+

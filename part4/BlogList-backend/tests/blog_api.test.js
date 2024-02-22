@@ -6,14 +6,23 @@ const app = require('../app');
 const api = supertest(app);
 
 const Blog = require('../models/Blog');
+const User = require('../models/User');
 
 beforeEach( async() => {
-    await Blog.deleteMany({ });
-    
+    await Blog.deleteMany({ })
     for(let blog of helper.initialBlogs) {
         let blogObject = new Blog(blog)
         await blogObject.save()
     }
+
+    await User.deleteMany({ })
+    const initialUser = {
+        username: 'UserTest',
+        name: 'User Test',
+        password: 'password'
+    }
+    await api.post('/api/users').send(initialUser)
+
 }, 50000)
 
 describe('test for endpoints from blog API api/blogs', () => {
@@ -40,10 +49,15 @@ describe('tests for post method', () => {
 
     test('create a new blog', async() => {
         
+        const user = await helper.createNewUser()
+
+        let newBlog = helper.newBlog
+        newBlog.userId = user._id
+
         await api
             .post('/api/blogs')
-            .send(helper.newBlog)
-            .expect(200)
+            .send(newBlog)
+            .expect(201)
 
         const blogs = await helper.blogsInDB()
         expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
@@ -54,10 +68,15 @@ describe('tests for post method', () => {
 
     test('post blog without likes', async() => {
 
+        const user = await helper.createNewUser()
+
+        let newBlog = helper.blogWithoutLikes
+        newBlog.userId = user._id
+
         await api
             .post('/api/blogs')
-            .send(helper.blogWithoutLikes)
-            .expect(200)
+            .send(newBlog)
+            .expect(201)
 
         const blogs = await helper.blogsInDB()
         expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
@@ -69,16 +88,20 @@ describe('tests for post method', () => {
 
     test('post without tittle or likes property', async() => {
 
+        const user = await helper.createNewUser()
+
+        let newBlog = helper.incompleteBlog
+        newBlog.userId = user._id
+
         await api
             .post('/api/blogs')
-            .send(helper.incompleteBlog)
+            .send(newBlog)
             .expect(400)
 
         const blogs = await helper.blogsInDB()
         expect(blogs).toHaveLength(helper.initialBlogs.length)
 
         const urls = blogs.map(blog => blog.url)
-        console.log(urls)
         expect(urls).not.toContain('http://notAGoodRequest.html')
     })
 
