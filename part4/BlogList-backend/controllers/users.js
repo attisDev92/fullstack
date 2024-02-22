@@ -13,8 +13,8 @@ userRouter.get('/', async(req,res) => {
 userRouter.post('/', async(req, res) => {
     const { username, name, password } = req.body
 
-    if(password.length <= 2) {
-        return res.status(400).end()
+    if(password.length < 3) {
+        return res.status(400).json({ error: 'User validation failed' })
     }
 
     const saltRounds = 10

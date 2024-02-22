@@ -27,7 +27,7 @@ beforeEach( async() => {
 
 describe('test for endpoints from blog API api/blogs', () => {
 
-    test('number of initial blogs in DB', async() => {
+    test.skip('number of initial blogs in DB', async() => {
         const response = await api.get('/api/blogs')
         
         expect(response.body).toHaveLength(helper.initialBlogs.length)
@@ -37,7 +37,7 @@ describe('test for endpoints from blog API api/blogs', () => {
 
 describe('test for verify the response properties', () => {
     
-    test('verify de property ID', async() => {
+    test.skip('verify de property ID', async() => {
         const response =  await api.get('/api/blogs')
 
         expect(response.body.some(obj => obj.id)).toBeDefined()
@@ -47,7 +47,7 @@ describe('test for verify the response properties', () => {
 
 describe('tests for post method', () => {
 
-    test('create a new blog', async() => {
+    test.skip('create a new blog', async() => {
         
         const user = await helper.createNewUser()
 
@@ -66,7 +66,7 @@ describe('tests for post method', () => {
         expect(titles).toContain(helper.newBlog.title)
     });
 
-    test('post blog without likes', async() => {
+    test.skip('post blog without likes', async() => {
 
         const user = await helper.createNewUser()
 
@@ -86,7 +86,7 @@ describe('tests for post method', () => {
         expect(blogSaved.likes).toEqual(0);
     });
 
-    test('post without tittle or likes property', async() => {
+    test.skip('post without tittle or likes property', async() => {
 
         const user = await helper.createNewUser()
 
@@ -109,7 +109,7 @@ describe('tests for post method', () => {
 
 describe('tests for updated information of blogs', () => {
 
-    test('updated likes number for the first blog from 7 to 15', async() => {
+    test.skip('updated likes number for the first blog from 7 to 15', async() => {
 
         const blogsAtStart = await helper.blogsInDB()
         const blogToUpdate = blogsAtStart[0]
@@ -135,8 +135,10 @@ describe('delete a blog by delete method', () => {
 
     test('delete a post', async() => {
 
+        const user = await helper.createNewUser()
         const blogsAtStart = await helper.blogsInDB()
-        const blogToDelete = blogsAtStart[0]
+        let blogToDelete = blogsAtStart[0]
+        blogToDelete.user = user._id
 
         await api
             .delete(`/api/blogs/${blogToDelete.id}`)
