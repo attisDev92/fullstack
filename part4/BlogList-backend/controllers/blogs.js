@@ -1,6 +1,7 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/Blog')
 const User =  require('../models/User')
+const tokenExtractor = require('../middlewares/tokenExtractor')
 
 blogsRouter.get('/', async(req, res) => {
     const blogs = await Blog
@@ -10,11 +11,11 @@ blogsRouter.get('/', async(req, res) => {
     res.status(200).json(blogs);
 })
 
-blogsRouter.post('/', async(req, res) => {
+blogsRouter.post('/', tokenExtractor, async(req, res) => {
 
-    const { body } = req
+    const { body, decodedToken } = req
 
-    const user = await User.findOne({ _id: body.userId})
+    const user = await User.findOne({ _id: decodedToken.id})
 
     const blog = new Blog({
         title: body.title,
