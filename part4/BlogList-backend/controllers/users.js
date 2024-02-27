@@ -6,7 +6,7 @@ userRouter.get('/', async(req,res) => {
     const users = await User
         .find({ })
         .populate('blogs')
-
+        
     res.status(200).json(users)
 })
 

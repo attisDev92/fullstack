@@ -1,7 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/Blog')
 const User =  require('../models/User')
-const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/', async(req, res) => {
     const blogs = await Blog
@@ -45,38 +44,40 @@ blogsRouter.post('/', async(req, res) => {
 
 blogsRouter.put('/:id', async(req, res) => {
 
-    const { body, userToken } = req
+    const { body, userToken, params } = req
     const user = await User.findOne({ _id: userToken.id })
 
-    const blogToUpdate = await Blog.findOne({ _id: req.params.id })
+    const blogToUpdate = await Blog.findOne({ _id: params.id })
 
     const blog = {
         likes: body.likes
     };
 
-    if (blogToUpdate.user.toString() === user._id.toString()) {
-        const blogUpdated = await Blog.findOneAndUpdate({ _id: req.params.id }, blog, { new: true })
-        const blogSaved = blogUpdated.save()
-        return res.status(200).json(blogSaved)
-    } else {
-        return res.status(401).json({ error: 'Unauthorized' })
+    if (user._id.toString() !== blogToUpdate.user.toString()) {
+        return res.status(401).json({ error: 'Unauthorized' });
     }
-    
+
+    const blogUpdated = await Blog.findOneAndUpdate({ _id: params.id }, blog, { new: true })
+    const blogSaved = blogUpdated.save()
+    res.status(200).json(blogSaved)
+  
 })
 
 blogsRouter.delete('/:id', async(req, res) => {
 
-    const { userToken } = req
+    const { userToken, params } = req
+
     const user = await User.findOne({ _id: userToken.id })
 
-    const blogToDelete = await Blog.findOne({ _id: req.params.id })
+    const blogToDelete = await Blog.findOne({ _id: params.id })
 
-    if (blogToDelete.user.toString() === user._id.toString()) {
-        await Blog.deleteOne({ _id: params.id })
-        return res.status(204).end()
-    } else {
-        return res.status(401).json({ error: 'Unauthorized' })
+    if (user._id.toString() !== blogToDelete.user.toString()) {
+        return res.status(401).json({ error: 'Unauthorized' });
     }
+
+    await Blog.deleteOne({ _id: params.id })
+    res.status(204).end()
+    
 })
 
 module.exports = blogsRouter

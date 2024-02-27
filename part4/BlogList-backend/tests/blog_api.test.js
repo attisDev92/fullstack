@@ -9,26 +9,30 @@ const Blog = require('../models/Blog');
 const User = require('../models/User');
 
 beforeEach( async() => {
+    
+    await User.deleteMany({ })
+    
     await Blog.deleteMany({ })
+
     for(let blog of helper.initialBlogs) {
         let blogObject = new Blog(blog)
         await blogObject.save()
     }
 
-    await User.deleteMany({ })
-    const initialUser = {
-        username: 'UserTest',
-        name: 'User Test',
-        password: 'password'
-    }
-    await api.post('/api/users').send(initialUser)
-
 }, 50000)
 
 describe('test for endpoints from blog API api/blogs', () => {
 
-    test.skip('number of initial blogs in DB', async() => {
-        const response = await api.get('/api/blogs')
+    test('number of initial blogs in DB', async() => {
+
+        const decodedToken = await helper.getAuthoriceToken()
+        const token = `Bearer ${decodedToken.token}`
+
+        console.log(token)
+
+        const response = await api
+            .get('/api/blogs')
+            .set('Authorization', token)
         
         expect(response.body).toHaveLength(helper.initialBlogs.length)
     });
@@ -37,25 +41,37 @@ describe('test for endpoints from blog API api/blogs', () => {
 
 describe('test for verify the response properties', () => {
     
-    test.skip('verify de property ID', async() => {
-        const response =  await api.get('/api/blogs')
+    test('verify de property ID', async() => {
+        
+        const decodedToken = await helper.getAuthoriceToken()
+        const token = `Bearer ${decodedToken.token}`
 
-        expect(response.body.some(obj => obj.id)).toBeDefined()
+        const response =  await api
+            .get('/api/blogs')
+            .set('Authorization', token)
+        
+            console.log(response.body)
+
+        expect(response.body[0].id).toBeDefined()
     });
 
 });
 
 describe('tests for post method', () => {
 
-    test.skip('create a new blog', async() => {
+    test('create a new blog', async() => {
         
-        const user = await helper.createNewUser()
+        const decodedToken = await helper.getAuthoriceToken()
+        const token = `Bearer ${decodedToken.token}`
+
+        const user = await User.findOne({ username: decodedToken.username })
 
         let newBlog = helper.newBlog
         newBlog.userId = user._id
 
         await api
             .post('/api/blogs')
+            .set('Authorization', token)
             .send(newBlog)
             .expect(201)
 
@@ -66,15 +82,18 @@ describe('tests for post method', () => {
         expect(titles).toContain(helper.newBlog.title)
     });
 
-    test.skip('post blog without likes', async() => {
+    test('post blog without likes', async() => {
+        const decodedToken = await helper.getAuthoriceToken()
+        const token = `Bearer ${decodedToken.token}`
 
-        const user = await helper.createNewUser()
+        const user = await User.findOne({ username: decodedToken.username })
 
         let newBlog = helper.blogWithoutLikes
         newBlog.userId = user._id
 
         await api
             .post('/api/blogs')
+            .set('Authorization', token)
             .send(newBlog)
             .expect(201)
 
@@ -86,15 +105,19 @@ describe('tests for post method', () => {
         expect(blogSaved.likes).toEqual(0);
     });
 
-    test.skip('post without tittle or likes property', async() => {
+    test('post without tittle or likes property', async() => {
 
-        const user = await helper.createNewUser()
+        const decodedToken = await helper.getAuthoriceToken()
+        const token = `Bearer ${decodedToken.token}`
+
+        const user = await User.findOne({ username: decodedToken.username })
 
         let newBlog = helper.incompleteBlog
         newBlog.userId = user._id
 
         await api
             .post('/api/blogs')
+            .set('Authorization', token)
             .send(newBlog)
             .expect(400)
 
@@ -109,10 +132,17 @@ describe('tests for post method', () => {
 
 describe('tests for updated information of blogs', () => {
 
-    test.skip('updated likes number for the first blog from 7 to 15', async() => {
+    test('updated likes number for the first blog from 7 to 15', async() => {
+
+        const decodedToken = await helper.getAuthoriceToken()
+        const token = `Bearer ${decodedToken.token}`
+
+        const user = await User.findOne({ username: decodedToken.username })
 
         const blogsAtStart = await helper.blogsInDB()
-        const blogToUpdate = blogsAtStart[0]
+        const blogToUpdate = await Blog.findOne({ title: "React patterns" })
+        blogToUpdate.user = user._id
+        blogToUpdate.save()
 
         const blogToUpdateLikes = {
             likes: 15
@@ -120,6 +150,7 @@ describe('tests for updated information of blogs', () => {
 
         await api
             .put(`/api/blogs/${blogToUpdate.id}`)
+            .set('Authorization', token)
             .send(blogToUpdateLikes)
             .expect(200)
 
@@ -135,13 +166,18 @@ describe('delete a blog by delete method', () => {
 
     test('delete a post', async() => {
 
-        const user = await helper.createNewUser()
-        const blogsAtStart = await helper.blogsInDB()
-        let blogToDelete = blogsAtStart[0]
+        const decodedToken = await helper.getAuthoriceToken()
+        const token = `Bearer ${decodedToken.token}`
+
+        const user = await User.findOne({ username: decodedToken.username })
+
+        const blogToDelete = await Blog.findOne({ title: "React patterns" })
         blogToDelete.user = user._id
+        blogToDelete.save()
 
         await api
-            .delete(`/api/blogs/${blogToDelete.id}`)
+            .delete(`/api/blogs/${blogToDelete._id}`)
+            .set({ Authorization: token })
             .expect(204)
 
         const blogsAtEnd = await helper.blogsInDB()
