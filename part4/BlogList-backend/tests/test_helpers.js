@@ -87,7 +87,6 @@ const createNewUser = async () => {
     });
 
     const userSaved = await user.save()
-
     return userSaved
 }
 
