@@ -1,7 +1,7 @@
 import { useState } from "react"
 import blogService from '../services/blogs'
 
-const BlogForm = ({ handleCreateBlog }) => {
+const BlogForm = ({ handleCreateBlog, handleNotification }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -16,12 +16,18 @@ const BlogForm = ({ handleCreateBlog }) => {
       url
     }
 
-    const res = await blogService.create(newBlog)
-    handleCreateBlog(res)
+    try{
+      const res = await blogService.create(newBlog)
+      handleCreateBlog(res)
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      console.log(res)
+      handleNotification(`${res.title} by ${res.author} was created`)
+    }catch (error) {
+      handleNotification('bad request, the blog information is wrong or incomplete')
+    }
     
-    setTitle('')
-    setAuthor('')
-    setUrl('')
   }
 
   return (

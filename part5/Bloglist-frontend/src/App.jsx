@@ -2,16 +2,17 @@ import { useState, useEffect } from 'react'
 import loginService from './services/login'
 import blogService from './services/blogs'
 
-
 import LoginForm from './components/LoginForm'
 import Blogs from './components/Blogs'
 import LogOutButton from './components/LogoutButton'
 import BlogForm from './components/BlogForm'
+import Notification from './components/Notification'
 
 const App = () => {
 
   const [user, setUser] = useState(null)
   const [blogs, setBlogs] = useState([])
+  const [notificationMessage, setNotificationMessage] = useState(null)
   
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('userBlogApp')
@@ -24,7 +25,6 @@ const App = () => {
   }, [])
 
   const handleLogin = async({ username, password }) => {
-
     try {
       const res = await loginService.login({ 
         username, 
@@ -40,17 +40,28 @@ const App = () => {
       blogService.setToken(res.token)
 
     } catch (error) {
-      console.error(error)
+      handleNotification('Wrong username or password')
     }
   }
 
   const fetchBlogs = async() => {
-    const blogs = await blogService.getAll()
-    setBlogs(blogs)
+    try{
+      const blogs = await blogService.getAll()
+      setBlogs(blogs)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const handleCreateBlog = (newBlog) => {
     setBlogs(blogs.concat(newBlog))
+  }
+
+  const handleNotification = (message) => {
+    setNotificationMessage(message)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
   }
 
   const handleLogout = () => {
@@ -60,6 +71,8 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={notificationMessage} />
+
       {
       user === null 
         ? <LoginForm handleLogin={handleLogin} />
@@ -68,7 +81,7 @@ const App = () => {
             <h2>blogs</h2>
             <p>{user.name} logged in</p> 
             <LogOutButton handleLogout={handleLogout}/>
-            <BlogForm handleCreateBlog={handleCreateBlog} />
+            <BlogForm handleCreateBlog={handleCreateBlog} handleNotification={handleNotification} />
             <Blogs blogs={blogs} />
           </>
         )

@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react"
-import blogServices from '../services/blogs'
-
 import Blog from './Blog'
 
 const Blogs = ({ blogs }) => {
