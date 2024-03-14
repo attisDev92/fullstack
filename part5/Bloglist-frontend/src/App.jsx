@@ -6,10 +6,12 @@ import blogService from './services/blogs'
 import LoginForm from './components/LoginForm'
 import Blogs from './components/Blogs'
 import LogOutButton from './components/LogoutButton'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
 
   const [user, setUser] = useState(null)
+  const [blogs, setBlogs] = useState([])
   
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('userBlogApp')
@@ -17,6 +19,7 @@ const App = () => {
       const userLogged = JSON.parse(loggedUserJSON)
       setUser(userLogged)
       blogService.setToken(userLogged.token)
+      fetchBlogs()
     }
   }, [])
 
@@ -41,6 +44,15 @@ const App = () => {
     }
   }
 
+  const fetchBlogs = async() => {
+    const blogs = await blogService.getAll()
+    setBlogs(blogs)
+  }
+
+  const handleCreateBlog = (newBlog) => {
+    setBlogs(blogs.concat(newBlog))
+  }
+
   const handleLogout = () => {
     setUser(null)
     blogService.setToken(null)
@@ -48,20 +60,19 @@ const App = () => {
 
   return (
     <div>
-
       {
-        user === null 
+      user === null 
         ? <LoginForm handleLogin={handleLogin} />
         : (
           <>
             <h2>blogs</h2>
             <p>{user.name} logged in</p> 
             <LogOutButton handleLogout={handleLogout}/>
-            <Blogs user={user} />
+            <BlogForm handleCreateBlog={handleCreateBlog} />
+            <Blogs blogs={blogs} />
           </>
         )
       }
-
     </div>
   )
 }
