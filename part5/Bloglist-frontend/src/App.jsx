@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import loginService from './services/login'
 import blogService from './services/blogs'
 
@@ -7,12 +7,14 @@ import Blogs from './components/Blogs'
 import LogOutButton from './components/LogoutButton'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
 
   const [user, setUser] = useState(null)
   const [blogs, setBlogs] = useState([])
   const [notificationMessage, setNotificationMessage] = useState(null)
+  const togglableRef = useRef()
   
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('userBlogApp')
@@ -72,18 +74,42 @@ const App = () => {
   return (
     <div>
       <Notification message={notificationMessage} />
+      
+      {user === null 
+        ? (
+          <Togglable 
+            buttonLabel={'Login'}
+            ref={togglableRef}
+          >
 
-      {
-      user === null 
-        ? <LoginForm handleLogin={handleLogin} />
-        : (
+            <LoginForm 
+              handleLogin={handleLogin}
+            />
+
+          </Togglable>
+
+        ) : (
+
           <>
             <h2>blogs</h2>
+
             <p>{user.name} logged in</p> 
-            <LogOutButton handleLogout={handleLogout}/>
-            <BlogForm handleCreateBlog={handleCreateBlog} handleNotification={handleNotification} />
-            <Blogs blogs={blogs} />
+
+            <LogOutButton 
+              handleLogout={handleLogout}
+            />
+
+            <BlogForm 
+              handleCreateBlog={handleCreateBlog} 
+              handleNotification={handleNotification} 
+            /> 
+
+            <Blogs 
+            blogs={blogs}
+            />
+
           </>
+
         )
       }
     </div>
