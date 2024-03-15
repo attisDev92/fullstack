@@ -35,20 +35,36 @@ const BlogForm = ({ handleCreateBlog, handleNotification }) => {
     <div>
       <h3>Create new</h3>
 
-      <Togglable buttonLabel={'add new blog'} ref={blogTogglableRef} >
+      <Togglable 
+        buttonLabel1={'add new blog'}
+        buttonLabel2={'cerrar'} 
+        ref={blogTogglableRef} 
+      >
     
         <form onSubmit={handleOnSubmit}>
 
             <label>Title: </label>
-            <input type="text" value={title} onChange={({ target }) => setTitle(target.value)} />
+            <input 
+              type="text" 
+              value={title} 
+              onChange={({ target }) => setTitle(target.value)} 
+            />
             <br />
 
             <label>Author: </label>
-            <input type="text" value={author} onChange={({ target }) => setAuthor(target.value)} />
+            <input 
+              type="text" 
+              value={author} 
+              onChange={({ target }) => setAuthor(target.value)} 
+            />
             <br />
 
             <label>url: </label>
-            <input type="text" value={url} onChange={({ target }) => setUrl(target.value)} />
+            <input 
+              type="text" 
+              value={url} 
+              onChange={({ target }) => setUrl(target.value)} 
+            />
             <br />
 
             <button>create</button>

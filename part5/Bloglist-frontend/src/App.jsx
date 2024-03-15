@@ -78,7 +78,8 @@ const App = () => {
       {user === null 
         ? (
           <Togglable 
-            buttonLabel={'Login'}
+            buttonLabel1={'Login'}
+            buttonLabel2={'Cancelar'}
             ref={togglableRef}
           >
 
