@@ -101,6 +101,7 @@ const App = () => {
             />
 
             <BlogForm 
+              user={user}
               handleCreateBlog={handleCreateBlog} 
               handleNotification={handleNotification} 
             /> 

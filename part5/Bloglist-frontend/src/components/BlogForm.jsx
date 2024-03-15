@@ -3,7 +3,7 @@ import blogService from '../services/blogs'
 
 import Togglable from "./Togglable"
 
-const BlogForm = ({ handleCreateBlog, handleNotification }) => {
+const BlogForm = ({ user, handleCreateBlog, handleNotification }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -20,7 +20,12 @@ const BlogForm = ({ handleCreateBlog, handleNotification }) => {
 
     try{
       const res = await blogService.create(newBlog)
-      handleCreateBlog(res)
+      console.log(res)
+      const blog = {
+        ...res,
+        user: {name: user.name}
+      }
+      handleCreateBlog(blog)
       setTitle('')
       setAuthor('')
       setUrl('')
