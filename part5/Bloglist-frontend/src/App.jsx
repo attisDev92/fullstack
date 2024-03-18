@@ -66,6 +66,11 @@ const App = () => {
     setBlogs(blogs.concat(newBlog))
   }
 
+  const handleDeleteBlog = (blogDeleted) => {
+    const blogsUpdated = blogs.filter((blog => blog.id !== blogDeleted.id))
+      setBlogs(blogsUpdated)
+  }
+
   const handleNotification = (message) => {
     setNotificationMessage(message)
       setTimeout(() => {
@@ -116,6 +121,7 @@ const App = () => {
             <Blogs 
               blogs={blogs}
               handleUpdateBlog={handleUpdateBlog}
+              handleDeleteBlog={handleDeleteBlog}
             />
 
           </>

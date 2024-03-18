@@ -28,8 +28,6 @@ describe('test for endpoints from blog API api/blogs', () => {
         const decodedToken = await helper.getAuthoriceToken()
         const token = `Bearer ${decodedToken.token}`
 
-        console.log(token)
-
         const response = await api
             .get('/api/blogs')
             .set('Authorization', token)
@@ -49,8 +47,6 @@ describe('test for verify the response properties', () => {
         const response =  await api
             .get('/api/blogs')
             .set('Authorization', token)
-        
-            console.log(response.body)
 
         expect(response.body[0].id).toBeDefined()
     });

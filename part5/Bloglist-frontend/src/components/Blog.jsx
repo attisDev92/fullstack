@@ -1,7 +1,7 @@
 import Togglable from "./Togglable"
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, handleUpdateBlog }) => {
+const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog }) => {
 
   const handleOnClick = async() => {
     const blogToUpdate = {
@@ -18,9 +18,24 @@ const Blog = ({ blog, handleUpdateBlog }) => {
       handleUpdateBlog(blogUpdated)
 
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
     
+  }
+
+  const handleDelete = async() => {
+    
+    const confirmDelete = window.confirm(`Remove the blog ${blog.title} by ${blog.author}`)
+    
+    try {
+      if(confirmDelete) {
+        const response = await blogService.destroy(blog.id)
+        console.log(response)
+        handleDeleteBlog(blog)
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -48,6 +63,7 @@ const Blog = ({ blog, handleUpdateBlog }) => {
           User: {blog.user.name}  
         </li>
       </ul>
+      <button onClick={handleDelete}>Delete</button> <br />
 
       </Togglable>
       <hr />

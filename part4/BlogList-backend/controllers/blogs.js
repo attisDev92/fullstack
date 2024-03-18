@@ -65,17 +65,18 @@ blogsRouter.put('/:id', async(req, res) => {
 
 blogsRouter.delete('/:id', async(req, res) => {
 
-    const { userToken, params } = req
+    const { userToken } = req
 
     const user = await User.findOne({ _id: userToken.id })
 
-    const blogToDelete = await Blog.findOne({ _id: params.id })
+
+    const blogToDelete = await Blog.findOne({ _id: req.params.id })
 
     if (user._id.toString() !== blogToDelete.user.toString()) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    await Blog.deleteOne({ _id: params.id })
+    await Blog.deleteOne({ _id: req.params.id })
     res.status(204).end()
     
 })

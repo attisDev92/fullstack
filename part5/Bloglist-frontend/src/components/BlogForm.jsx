@@ -20,7 +20,6 @@ const BlogForm = ({ user, handleCreateBlog, handleNotification }) => {
 
     try{
       const res = await blogService.create(newBlog)
-      console.log(res)
       const blog = {
         ...res,
         user: {

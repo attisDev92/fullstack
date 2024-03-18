@@ -9,9 +9,8 @@ const setToken = newToken => {
 }
 
 const getAll = async () => {
-
   const config = {
-    headers: {Authorization: token},
+    headers: {Authorization: token}
   }
 
   const res = await axios.get(baseUrl, config)
@@ -19,7 +18,6 @@ const getAll = async () => {
 }
 
 const create = async newBlog => {
-
   const config = {
     headers: {Authorization: token}
   }
@@ -29,7 +27,6 @@ const create = async newBlog => {
 }
 
 const update = async (id, blogToUpdated) => {
-
   const config = {
     headers: {Authorization: token}
   }
@@ -38,9 +35,19 @@ const update = async (id, blogToUpdated) => {
   return res.data
 }
 
+const destroy = async id => {
+  const config = {
+    headers: {Authorization: token}
+  }
+
+  const res = await axios.delete(`${baseUrl}/${id}`, config)
+  return res.data
+}
+
 export default { 
   getAll,
   create,
   update,
+  destroy,
   setToken
 }
