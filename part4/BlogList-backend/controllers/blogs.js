@@ -44,21 +44,21 @@ blogsRouter.post('/', async(req, res) => {
 
 blogsRouter.put('/:id', async(req, res) => {
 
-    const { body, userToken, params } = req
-    const user = await User.findOne({ _id: userToken.id })
+    const { body, params } = req
 
     const blogToUpdate = await Blog.findOne({ _id: params.id })
 
     const blog = {
+        blogToUpdate,
         likes: body.likes
     };
 
-    if (user._id.toString() !== blogToUpdate.user.toString()) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const blogUpdated = await Blog.findOneAndUpdate({ _id: params.id }, blog, { new: true })
-    const blogSaved = blogUpdated.save()
+    const blogUpdated = await Blog.findOneAndUpdate(
+        { _id: params.id },
+        blog, 
+        { new: true },
+    )
+    const blogSaved = await blogUpdated.save()
     res.status(200).json(blogSaved)
   
 })

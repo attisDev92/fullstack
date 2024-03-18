@@ -23,7 +23,9 @@ const BlogForm = ({ user, handleCreateBlog, handleNotification }) => {
       console.log(res)
       const blog = {
         ...res,
-        user: {name: user.name}
+        user: {
+          name: user.name
+        },
       }
       handleCreateBlog(blog)
       setTitle('')

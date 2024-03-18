@@ -55,6 +55,13 @@ const App = () => {
     }
   }
 
+  const handleUpdateBlog = (updatedBlog) => {
+
+    setBlogs(prevBlogs =>
+      prevBlogs.map(blog => (blog.id === updatedBlog.id ? updatedBlog : blog))
+    );
+  };
+
   const handleCreateBlog = (newBlog) => {
     setBlogs(blogs.concat(newBlog))
   }
@@ -107,7 +114,8 @@ const App = () => {
             /> 
 
             <Blogs 
-            blogs={blogs}
+              blogs={blogs}
+              handleUpdateBlog={handleUpdateBlog}
             />
 
           </>
