@@ -1,5 +1,6 @@
 import Togglable from "./Togglable"
 import blogService from '../services/blogs'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog }) => {
 
@@ -70,6 +71,12 @@ const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog }) => {
 
     </div>  
   )
+}
+
+Blog.protoTypes = {
+  blog: PropTypes.object.isRequired, 
+  handleUpdateBlog: PropTypes.func.isRequired, 
+  handleDeleteBlog: PropTypes.func.isRequired
 }
   
 export default Blog
