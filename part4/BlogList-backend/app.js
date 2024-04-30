@@ -10,6 +10,12 @@ const middleware = require('./middlewares/middleware')
 const verifyToken = require('./middlewares/verifyToken')
 const errorHandler = require('./middlewares/errorHandler')
 const logger = require('./utils/logger')
+
+if (process.env.NODE_ENV === 'test') {  
+    const testingRouter = require('./controllers/testing')  
+    app.use('/api/testing', testingRouter)
+}
+
 const mongoose = require('mongoose')
 const morgan = require('morgan')
 mongoose.set('strictQuery', false)
