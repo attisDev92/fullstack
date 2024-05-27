@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import  { incrementVote, createAnecdote } from './reducers/anecdoteReducer'
 
 const App = () => {
+
   const anecdotes = useSelector(state => state)
   const dispatch = useDispatch()
 
