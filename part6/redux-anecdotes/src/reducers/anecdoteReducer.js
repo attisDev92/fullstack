@@ -1,3 +1,5 @@
+import { createSlice } from "@reduxjs/toolkit"
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -19,54 +21,35 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const sortAnecdotes = (anecdotes) => {
-  return anecdotes.slice().sort((a, b) => b.votes - a.votes)
-}
+const anecdotesSlice = createSlice({
+  name: 'anecdotes',
+  initialState,
+  reducers: {
 
-const reducer = (state = sortAnecdotes(initialState), action) => {
-
-  switch (action.type) {
-
-    case 'INCREMENT_VOTE': {
-      const id = action.payload.id
-      const anecdoteToChange = state.find(a => a.id === id)
-      const changedAnecdote = {
-        ...anecdoteToChange,
-        votes: anecdoteToChange.votes + 1
+    createAnecdote (state, action) {
+      const content = action.payload
+      const newNoteObject = {
+        content,
+        id: getId(),
+        votes: 0
       }
-      const orderState = sortAnecdotes(
-        state.map(anecdote => 
-          anecdote.id !== id ? anecdote : changedAnecdote
-      ))
-      return orderState
+      state.push(newNoteObject)
+      state.sort((a, b) => b.votes - a.votes)
+    },
+
+    incrementVote (state, action) {
+      const id = action.payload
+      const anecdoteToChange = state.find(a => a.id === id)
+      if (anecdoteToChange) {
+        anecdoteToChange.votes += 1
+      }
+      state.sort((a, b) => b.votes - a.votes)
     }
 
-    case 'NEW_NOTE': {
-      const newState = [...state, action.payload]
-      return sortAnecdotes(newState)
-    }
-    
-    default: return state
   }
+})
 
-}
+export const { createAnecdote, incrementVote } = anecdotesSlice.actions
 
-export const incrementVote = (id) => {
-  return {
-    type: 'INCREMENT_VOTE',
-    payload: { id }
-  }
-}
 
-export const createAnecdote = (content) => {
-  return {
-    type: 'NEW_NOTE',
-    payload: {
-      content: content,
-      id: getId(),
-      votes: 0
-    }
-  }
-}
-
-export default reducer
+export default anecdotesSlice.reducer
