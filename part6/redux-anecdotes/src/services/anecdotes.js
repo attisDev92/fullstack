@@ -18,7 +18,22 @@ const createAnecdote = async (content) => {
   return res.data
 }
 
+const updateVote = async (id) => {
+  const anecdotes = await getAll()
+  const anecdoteToUpdate = anecdotes.find(anecdote => 
+    anecdote.id === id
+  )
+  const updatedAnecdote = {
+    ...anecdoteToUpdate,
+    votes: anecdoteToUpdate.votes + 1 
+  }
+
+  const res = await axios.put(`${DBurl}/${id}`, updatedAnecdote)
+  return res.data
+} 
+
 export default {
   getAll,
-  createAnecdote
+  createAnecdote,
+  updateVote
 }
