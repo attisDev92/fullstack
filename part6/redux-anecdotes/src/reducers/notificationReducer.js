@@ -1,8 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 const initialState = {
-  display: 'none',
-  message: ''
+  active: false,
+  message: '',
+  time: 0
 }
 
 const notificationSlice = createSlice({
@@ -10,26 +11,21 @@ const notificationSlice = createSlice({
   initialState,
   reducers: {
 
-    setNotificationVote (state, action) {
-      const anecdote = action.payload
-      state.display = 'block'
-      state.message = `you voted for ${anecdote}`
-    },
-
-    setNotificationNewAnecdote (state, action) {
-      const anecdote = action.payload
-      state.display = 'block'
-      state.message = `you create a new anecdote: ${anecdote}`
+    setNotification (state, action) {
+      state.active = true
+      state.message = action.payload.message
+      state.time = action.payload.time
     },
 
     clearNotification (state, action) {
-      state.display = 'none'
+      state.active = false
       state.message = ''
+      state.time = 0
     }
 
   }
 })
 
-export const { setNotificationVote, setNotificationNewAnecdote, clearNotification } = notificationSlice.actions
+export const { setNotification, clearNotification } = notificationSlice.actions
 
 export default notificationSlice.reducer
