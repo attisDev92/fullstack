@@ -14,6 +14,7 @@ const Notification = () => {
       setDisplayNotification('block')
       setTimeout(() => {
         dispatch(clearNotification())
+        setDisplayNotification('none')
       }, notification.time)
     }
     
