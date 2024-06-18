@@ -6,15 +6,14 @@ const AnecdoteList = ({ anecdotes }) => (
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map(
-        anecdote => (
-          <Link to={`/${anecdote.id}`}>
-            <li 
-              key={anecdote.id} 
-            >
-              {anecdote.content}
-            </li>
-          </Link>
-        )
+        anecdote => 
+        <Link to={`/${anecdote.id}`}>
+          <li 
+            key={anecdote.id} 
+          >
+            {anecdote.content}
+          </li>
+        </Link>
       )}
     </ul>
   </div>
