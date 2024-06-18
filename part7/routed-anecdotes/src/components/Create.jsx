@@ -19,6 +19,13 @@ const CreateNew = ({ addNew }) => {
     navigate('/')
   }
 
+  const resetAll = (e) => {
+    e.preventDefault()
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
@@ -35,7 +42,8 @@ const CreateNew = ({ addNew }) => {
           url for more info
           <input {...info} />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
+        <button onClick={resetAll}>reset</button>
       </form>
     </div>
   )
