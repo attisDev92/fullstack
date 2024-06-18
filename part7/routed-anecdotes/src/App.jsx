@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import {
   Routes,
-  Route
+  Route,
+  useMatch
 } from 'react-router-dom'
 
 import About from './components/About'
 import AnecdoteList from './components/Anecdotes'
 import CreateNew from './components/Create'
+import Anecdote from './components/Anecdote'
 import Menu from './components/Menu'
 import Footer from './components/Footer'
 
@@ -49,6 +51,11 @@ const App = () => {
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
   }
 
+  const match = useMatch('/:id')
+  const anecdote = match
+    ? anecdotes.find(anecdote => anecdote.id === Number(match.params.id))
+    : null
+
   return (
     <div>
       <h1>Software anecdotes</h1>
@@ -62,6 +69,10 @@ const App = () => {
         <Route 
           path='/create' 
           element={<CreateNew addNew={addNew} />} 
+        />
+        <Route 
+          path='/:id'
+          element={<Anecdote anecdote={anecdote} voteFn={vote} />}
         />
         <Route 
           path='/' 
