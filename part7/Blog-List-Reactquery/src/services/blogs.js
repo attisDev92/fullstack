@@ -10,40 +10,44 @@ const setToken = newToken => {
 
 const getAll = async () => {
   const config = {
-    headers: { Authorization: token },
+    headers: {Authorization: token}
   }
+
   const res = await axios.get(baseUrl, config)
   return res.data
 }
 
 const create = async newBlog => {
   const config = {
-    headers: { Authorization: token },
+    headers: {Authorization: token}
   }
+
   const res = await axios.post(baseUrl, newBlog, config)
   return res.data
 }
 
 const update = async (id, blogToUpdated) => {
   const config = {
-    headers: { Authorization: token },
+    headers: {Authorization: token}
   }
+
   const res = await axios.put(`${baseUrl}/${id}`, blogToUpdated, config)
   return res.data
 }
 
 const destroy = async id => {
   const config = {
-    headers: { Authorization: token },
+    headers: {Authorization: token}
   }
+
   const res = await axios.delete(`${baseUrl}/${id}`, config)
   return res.data
 }
 
-export default {
+export default { 
   getAll,
   create,
   update,
   destroy,
-  setToken,
+  setToken
 }

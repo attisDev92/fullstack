@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'prettierreact'
-import loginService from './services/login'
-import blogService from './services/blogs'
+import { useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { blogsInit } from './redux/blogReducer'
+import { setUser } from './redux/userReducer'
 
 import LoginForm from './components/LoginForm'
 import Blogs from './components/Blogs'
@@ -10,108 +11,40 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 const App = () => {
-  const [user, setUser] = useState(null)
-  const [blogs, setBlogs] = useState([])
-  const [notificationMessage, setNotificationMessage] = useState(null)
   const togglableRef = useRef()
+  const dispatch = useDispatch()
+  const user = useSelector(state => state.user)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('userBlogApp')
     if (loggedUserJSON) {
       const userLogged = JSON.parse(loggedUserJSON)
-      setUser(userLogged)
-      blogService.setToken(userLogged.token)
-      fetchBlogs()
+      dispatch(setUser(userLogged))
+      dispatch(blogsInit())
     }
   }, [])
-
-  const handleLogin = async ({ username, password }) => {
-    try {
-      const res = await loginService.login({
-        username,
-        password,
-      })
-
-      window.localStorage.setItem('userBlogApp', JSON.stringify(res))
-
-      setUser(res)
-      blogService.setToken(res.token)
-    } catch (error) {
-      handleNotification('Wrong username or password')
-    }
-  }
-
-  const fetchBlogs = async () => {
-    try {
-      const blogs = await blogService.getAll()
-      setBlogs(blogs)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const handleUpdateBlog = updatedBlog => {
-    setBlogs(prevBlogs =>
-      prevBlogs.map(blog => (blog.id === updatedBlog.id ? updatedBlog : blog)),
-    )
-  }
-
-  const handleCreateBlog = newBlog => {
-    setBlogs(blogs.concat(newBlog))
-  }
-
-  const handleDeleteBlog = blogDeleted => {
-    const blogsUpdated = blogs.filter(blog => blog.id !== blogDeleted.id)
-    setBlogs(blogsUpdated)
-  }
-
-  const handleNotification = message => {
-    setNotificationMessage(message)
-    setTimeout(() => {
-      setNotificationMessage(null)
-    }, 5000)
-  }
-
-  const handleLogout = () => {
-    setUser(null)
-    blogService.setToken(null)
-  }
 
   return (
     <div>
       <h1>Blog App</h1>
-
-      <Notification message={notificationMessage} />
-
+      <Notification />
       {user === null ? (
         <Togglable
           buttonLabel1={'Login'}
           buttonLabel2={'Cancelar'}
           ref={togglableRef}
         >
-          <LoginForm handleLogin={handleLogin} />
+          <LoginForm />
         </Togglable>
       ) : (
         <>
           <h2>blogs</h2>
-
           <p>{user.name} logged in</p>
-
-          <LogOutButton handleLogout={handleLogout} />
-
-          <BlogForm
-            user={user}
-            handleCreateBlog={handleCreateBlog}
-            handleNotification={handleNotification}
-          />
-
-          <Blogs
-            blogs={blogs}
-            handleUpdateBlog={handleUpdateBlog}
-            handleDeleteBlog={handleDeleteBlog}
-          />
+          <LogOutButton />
+          <BlogForm />
         </>
       )}
+      <Blogs />
     </div>
   )
 }

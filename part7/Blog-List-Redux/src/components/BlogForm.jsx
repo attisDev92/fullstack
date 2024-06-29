@@ -1,42 +1,30 @@
 import { useState, useRef } from 'react'
-import blogService from '../services/blogs'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { createBlog } from '../redux/blogReducer'
 import Togglable from './Togglable'
 
-const BlogForm = ({ user, handleCreateBlog, handleNotification }) => {
+const BlogForm = () => {
+  const dispatch = useDispatch()
+  const user = useSelector(state => state.user)
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const blogTogglableRef = useRef()
 
-  const handleOnSubmit = async e => {
+  const handleOnSubmit = e => {
     e.preventDefault()
-
     const newBlog = {
       title,
       author,
       url,
     }
 
-    try {
-      const res = await blogService.create(newBlog)
-      const blog = {
-        ...res,
-        user: {
-          name: user.name,
-        },
-      }
-      handleCreateBlog(blog)
+    dispatch(createBlog(newBlog, user)).then(() => {
       setTitle('')
       setAuthor('')
       setUrl('')
-      handleNotification(`${res.title} by ${res.author} was created`)
       blogTogglableRef.current.toggleVisibility()
-    } catch (error) {
-      handleNotification(
-        'bad request, the blog information is wrong or incomplete',
-      )
-    }
+    })
   }
 
   return (

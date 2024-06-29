@@ -1,39 +1,16 @@
+import { useDispatch } from 'react-redux'
+import { likeBlog, deleteBlog } from '../redux/blogReducer'
 import Togglable from './Togglable'
-import blogService from '../services/blogs'
 
-const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog }) => {
-  const handleOnClick = async () => {
-    const blogToUpdate = {
-      ...blog,
-      likes: blog.likes + 1,
-    }
+const Blog = ({ blog }) => {
+  const dispatch = useDispatch()
 
-    try {
-      const response = await blogService.update(blog.id, blogToUpdate)
-      const blogUpdated = {
-        ...response,
-        user: blogToUpdate.user,
-      }
-      handleUpdateBlog(blogUpdated)
-    } catch (error) {
-      console.error(error)
-    }
+  const handleOnClickLike = () => {
+    dispatch(likeBlog(blog))
   }
 
-  const handleDelete = async () => {
-    const confirmDelete = window.confirm(
-      `Remove the blog ${blog.title} by ${blog.author}`,
-    )
-
-    try {
-      if (confirmDelete) {
-        const response = await blogService.destroy(blog.id)
-        console.log(response)
-        handleDeleteBlog(blog)
-      }
-    } catch (error) {
-      console.error(error)
-    }
+  const handleDelete = () => {
+    dispatch(deleteBlog(blog.id))
   }
 
   return (
@@ -46,7 +23,7 @@ const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog }) => {
           <li>URL: {blog.url}</li>
           <li>
             Likes: {blog.likes}
-            <button onClick={handleOnClick}>like</button>
+            <button onClick={handleOnClickLike}>like</button>
           </li>
           <li>User: {blog.user.name}</li>
         </ul>
