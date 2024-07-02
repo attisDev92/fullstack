@@ -1,15 +1,16 @@
-const LogOutButton = ({ handleLogout }) => {
+import { useUser } from '../Reducers/userContext'
 
-  const handleOnClick = () => { 
-    window.localStorage.removeItem('userBlogApp')
-    handleLogout()
+const LogOutButton = () => {
+  const { dispatch } = useUser()
+
+  const handleLogout = () => {
+    dispatch({
+      type: 'LOGOUT_USER',
+      payload: null,
+    })
   }
 
-  return(
-    <button onClick={handleOnClick}>
-      Logout
-    </button>
-  )
+  return <button onClick={handleLogout}>Logout</button>
 }
 
 export default LogOutButton

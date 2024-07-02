@@ -1,78 +1,72 @@
-import Togglable from "./Togglable"
+import Togglable from './Togglable'
 import blogService from '../services/blogs'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNotification } from '../Reducers/notificationContext'
 
-const Blog = ({ blog, handleUpdateBlog, handleDeleteBlog }) => {
+const Blog = ({ blog }) => {
+  const queryClient = useQueryClient()
+  const { dispatch } = useNotification()
 
-  const handleOnClick = async() => {
+  const updateBlogMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: blogUpdated => {
+      queryClient.invalidateQueries(['blogs'])
+      dispatch({
+        type: 'SET_NOTIFICATION',
+        payload: `you liked the blog ${blogUpdated.title}`,
+      })
+    },
+  })
 
+  const handleOnClick = () => {
     const blogToUpdate = {
       ...blog,
-      likes: blog.likes + 1
+      likes: blog.likes + 1,
     }
-
-    try {
-      const response = await blogService.update(blog.id, blogToUpdate)
-      const blogUpdated = {
-        ...response,
-        user: blogToUpdate.user
-      }
-      handleUpdateBlog(blogUpdated)
-
-    } catch (error) {
-      console.error(error)
-    }
-    
+    updateBlogMutation.mutate(blogToUpdate)
   }
 
-  const handleDelete = async() => {
-    
-    const confirmDelete = window.confirm(`Remove the blog ${blog.title} by ${blog.author}`)
-    
-    try {
-      if(confirmDelete) {
-        const response = await blogService.destroy(blog.id)
-        console.log(response)
-        handleDeleteBlog(blog)
-      }
-    } catch (error) {
-      console.error(error)
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.destroy,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['blogs'])
+      dispatch({
+        type: 'SET_NOTIFICATION',
+        payload: 'you deleted a blog',
+      })
+    },
+  })
+
+  const handleDelete = () => {
+    const confirmDelete = window.confirm(
+      `Remove the blog ${blog.title} by ${blog.author}`,
+    )
+    if (confirmDelete) {
+      deleteBlogMutation.mutate(blog.id)
     }
   }
 
   return (
-    <div className="container__blog">
-      <h4>{blog.title} </h4> 
-      <p>
-        Author: {blog.author} 
-      </p>
-      
-      <Togglable 
-        buttonLabel1="view"
-        buttonLabel2="hide"
-      >
-      <ul>
-        <li>
-          URL: {blog.url} 
-        </li>
-        <li>
-          Likes: {blog.likes}
-          <button onClick={handleOnClick}>
-            like
-          </button>
-        </li> 
-        <li>
-          User: {blog.user.name}  
-        </li>
-      </ul>
-      
-      <button onClick={handleDelete}>Delete</button>
-      <br/>
+    <div className='container__blog'>
+      <h4>{blog.title} </h4>
+      <p>Author: {blog.author}</p>
 
+      <Togglable buttonLabel1='view' buttonLabel2='hide'>
+        <ul>
+          <li>URL: {blog.url}</li>
+          <li>
+            Likes: {blog.likes}
+            <button onClick={handleOnClick}>like</button>
+          </li>
+          <li>User: {blog.user.name}</li>
+        </ul>
+
+        <button onClick={handleDelete}>Delete</button>
+        <br />
       </Togglable>
       <hr />
-
-    </div>  
+    </div>
   )
 }
-  
+
 export default Blog

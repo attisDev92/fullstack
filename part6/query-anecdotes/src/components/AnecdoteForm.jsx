@@ -1,32 +1,37 @@
-import { createNew } from "../request"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useNotification } from "../notificationContext"
-
+import { createNew } from "../request";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNotification } from "../notificationContext";
 
 const AnecdoteForm = () => {
-  const queryClient = useQueryClient()
-  const { dispatch } = useNotification()
+  const queryClient = useQueryClient();
+  const { dispatch } = useNotification();
 
   const newAnecdoteMutation = useMutation({
     mutationFn: createNew,
     onSuccess: (newNote) => {
-      queryClient.invalidateQueries(['anecdotes'])
-      dispatch({ type: 'SET_NOTIFICATION', payload: `you created "${newNote.content}" anecdote` })
+      queryClient.invalidateQueries(["anecdotes"]);
+      dispatch({
+        type: "SET_NOTIFICATION",
+        payload: `you created "${newNote.content}" anecdote`,
+      });
     },
 
     onError: (error) => {
-      if (error.message === 'Request failed with status code 400') {
-        dispatch({ type: 'SET_NOTIFICATION', payload: 'Your anecdote must be at least 5 characters' })
+      if (error.message === "Request failed with status code 400") {
+        dispatch({
+          type: "SET_NOTIFICATION",
+          payload: "Your anecdote must be at least 5 characters",
+        });
       }
-    }
-  })
+    },
+  });
 
   const onCreate = (event) => {
-    event.preventDefault()
-    const content = event.target.anecdote.value
-    event.target.anecdote.value = ""
-    newAnecdoteMutation.mutate(content)
-  }
+    event.preventDefault();
+    const content = event.target.anecdote.value;
+    event.target.anecdote.value = "";
+    newAnecdoteMutation.mutate(content);
+  };
 
   return (
     <div>
@@ -36,7 +41,7 @@ const AnecdoteForm = () => {
         <button type="submit">create</button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default AnecdoteForm
+export default AnecdoteForm;
