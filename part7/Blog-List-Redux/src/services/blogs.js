@@ -40,10 +40,19 @@ const destroy = async id => {
   return res.data
 }
 
+const addComment = async (id, comment) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const res = await axios.post(`${baseUrl}/${id}/comment`, comment, config)
+  return res.data
+}
+
 export default {
   getAll,
   create,
   update,
   destroy,
   setToken,
+  addComment
 }

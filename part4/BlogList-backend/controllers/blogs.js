@@ -37,9 +37,29 @@ blogsRouter.post("/", async (req, res) => {
   res.status(201).json(blogSaved);
 });
 
-blogsRouter.put("/:id", async (req, res) => {
+blogsRouter.post("/:id/comment", async (req, res) => {
   const { body, params } = req;
 
+  if (!body.comment) {
+    return res.status(400).json({ error: 'Comment is missing' });
+  }
+  const blogToUpdate = await Blog.findById(params.id);
+
+  if (!blogToUpdate) {
+    return res.status(404).json({ error: 'Blog not found' });
+  }
+  const updatedComments = blogToUpdate.comments ? blogToUpdate.comments.concat(body.comment) : [body.comment];
+  blogToUpdate.comments = updatedComments;
+
+  // Guardar los cambios en la base de datos
+  const blogUpdated = await blogToUpdate.save();
+  res.status(200).json(blogUpdated);
+});
+
+
+
+blogsRouter.put("/:id", async (req, res) => {
+  const { body, params } = req;
   const blogToUpdate = await Blog.findOne({ _id: params.id });
 
   const blog = {
@@ -56,9 +76,7 @@ blogsRouter.put("/:id", async (req, res) => {
 
 blogsRouter.delete("/:id", async (req, res) => {
   const { userToken } = req;
-
   const user = await User.findOne({ _id: userToken.id });
-
   const blogToDelete = await Blog.findOne({ _id: req.params.id });
 
   if (user._id.toString() !== blogToDelete.user.toString()) {

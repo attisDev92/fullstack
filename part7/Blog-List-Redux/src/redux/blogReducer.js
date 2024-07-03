@@ -8,29 +8,37 @@ const blogsSlice = createSlice({
   name: 'blogs',
   initialState: [],
   reducers: {
-    newBlog (state, action) {
+    newBlog(state, action) {
       state.push(action.payload)
       state.sort(compareLikes)
     },
-    updateBlog (state, action) {
+    updateBlog(state, action) {
       const updatedBlog = action.payload
       const index = state.findIndex(blog => blog.id === updatedBlog.id)
       if (index !== -1) {
-        state[index].likes = updatedBlog.likes
+        state[index] = updatedBlog
         state.sort(compareLikes)
       }
     },
-    setBlogs (state, action) {
+    setBlogs(state, action) {
       return action.payload.sort(compareLikes)
     },
-    destroyBlog (state, action) {
+    destroyBlog(state, action) {
       const id = action.payload
       return state.filter(blog => blog.id !== id).sort(compareLikes)
+    },
+    commentBlog(state, action) {
+      const updatedBlog = action.payload
+      const index = state.findIndex(blog => blog.id === updatedBlog.id)
+      if (index !== -1) {
+        state[index] = updatedBlog
+        state.sort(compareLikes)
+      }
     }
   }
 })
 
-export const { newBlog, updateBlog, setBlogs, destroyBlog } = blogsSlice.actions
+export const { newBlog, updateBlog, setBlogs, destroyBlog, commentBlog } = blogsSlice.actions
 
 export const createBlog = (blogToCreate, user) => {
   return async (dispatch) => {
@@ -41,7 +49,19 @@ export const createBlog = (blogToCreate, user) => {
       dispatch(setNotification(`you have created an ${blog.title} by ${blog.author}`))
     } catch (error) {
       console.error(error)
-      dispatch(setNotification( 'bad request, the blog information is wrong or incomplete'))
+      dispatch(setNotification('bad request, the blog information is wrong or incomplete'))
+    }
+  }
+}
+
+export const addCommentBlog = (blog, newComment) => {
+  return async (dispatch) => {
+    try {
+      const updatedBlog = await blogServices.addComment(blog.id, { comment: newComment })
+      dispatch(commentBlog({ ...blog, comments: updatedBlog.comments }))
+    } catch (error) {
+      console.log(error)
+      dispatch(setNotification())
     }
   }
 }
@@ -53,7 +73,7 @@ export const likeBlog = (blog) => {
       const updatedBlog = await blogServices.update(blog.id, blogToUpdate)
       dispatch(updateBlog(updatedBlog))
       dispatch(setNotification(`you liked the blog ${updatedBlog.title}`))
-    } catch(error) {
+    } catch (error) {
       console.error(error)
       dispatch(setNotification())
     }
