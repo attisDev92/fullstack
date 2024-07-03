@@ -3,6 +3,7 @@ import Blog from './Blog'
 
 const Blogs = () => {
   const blogs = useSelector(state => state.blogs)
+
   return (
     <>
       {

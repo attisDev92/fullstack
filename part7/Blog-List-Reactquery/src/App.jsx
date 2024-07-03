@@ -1,15 +1,17 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useUser } from './Reducers/userContext'
+import { Routes, Route, Link } from 'react-router-dom'
 
 import LoginForm from './components/LoginForm'
 import Blogs from './components/Blogs'
 import LogOutButton from './components/LogoutButton'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
+import Users from './components/Users'
+import UserProfile from './components/UserProfile'
+import BlogInfo from './components/BlogInfo'
 
 const App = () => {
-  const togglableRef = useRef()
   const { state, dispatch } = useUser()
   const user = state
 
@@ -27,24 +29,45 @@ const App = () => {
   return (
     <div>
       <h1>Blog App</h1>
+      <nav>
+        <Link to='/'>Home</Link>
+        <Link to='/blogs'>Blogs</Link>
+        <Link to='/users'>Users</Link>
+        {user ? (
+          <>
+            <p>{user.name} logged in</p>
+            <LogOutButton />
+          </>
+        ) : (
+          <Link to='/login'>LogIn</Link>
+        )}
+      </nav>
       <Notification />
-      {user === null ? (
-        <Togglable
-          buttonLabel1={'Login'}
-          buttonLabel2={'Cancelar'}
-          ref={togglableRef}
-        >
-          <LoginForm />
-        </Togglable>
-      ) : (
-        <>
-          <h2>blogs</h2>
-          <p>{user.name} logged in</p>
-          <LogOutButton />
-          <BlogForm />
-        </>
-      )}
-      <Blogs />
+      <Routes>
+        <Route
+          path='/blogs'
+          element={
+            <>
+              <h2>Blogs</h2>
+              <BlogForm />
+              <Blogs />
+            </>
+          }
+        />
+        <Route path='/blogs/:id' element={<BlogInfo />} />
+        <Route
+          path='/users'
+          element={
+            <>
+              <h2>Users</h2>
+              <Users />
+            </>
+          }
+        />
+        <Route path='/users/:id' element={<UserProfile />} />
+        <Route path='/login' element={<LoginForm />} />
+        <Route path='/' element={<Blogs />} />
+      </Routes>
     </div>
   )
 }

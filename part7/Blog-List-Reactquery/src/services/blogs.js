@@ -8,44 +8,38 @@ const setToken = newToken => {
   token = `Bearer ${newToken}`
 }
 
-const getAll = async () => {
-  const config = {
-    headers: { Authorization: token },
-  }
+const getConfig = () => ({
+  headers: { Authorization: token }
+})
 
-  const res = await axios.get(baseUrl, config)
+const getAll = async () => {
+  const res = await axios.get(baseUrl, getConfig())
+  return res.data
+}
+
+const getBlog = async (id) => {
+  const res = await axios.get(`${baseUrl}/${id}`, getConfig())
   return res.data
 }
 
 const create = async newBlog => {
-  const config = {
-    headers: { Authorization: token },
-  }
-
-  const res = await axios.post(baseUrl, newBlog, config)
+  const res = await axios.post(baseUrl, newBlog, getConfig())
   return res.data
 }
 
 const update = async (blogToUpdated) => {
-  const config = {
-    headers: { Authorization: token },
-  }
-
-  const res = await axios.put(`${baseUrl}/${blogToUpdated.id}`, blogToUpdated, config)
+  const res = await axios.put(`${baseUrl}/${blogToUpdated.id}`, blogToUpdated, getConfig())
   return res.data
 }
 
 const destroy = async id => {
-  const config = {
-    headers: { Authorization: token },
-  }
-
-  const res = await axios.delete(`${baseUrl}/${id}`, config)
+  const res = await axios.delete(`${baseUrl}/${id}`, getConfig())
   return res.data
 }
 
 export default {
   getAll,
+  getBlog,
   create,
   update,
   destroy,

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import userService from '../services/login'
 import { useUser } from '../Reducers/userContext'
 import { useNotification } from '../Reducers/notificationContext'
@@ -8,7 +9,14 @@ const LoginForm = () => {
   const [password, setPassword] = useState('')
   const setUser = useUser().dispatch
   const setNotification = useNotification().dispatch
+  const navigate = useNavigate()
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('userBlogApp')
+    if (loggedUserJSON) {
+      navigate('/')
+    }
+  })
   const handleLogin = async e => {
     e.preventDefault()
     const credentials = {
@@ -24,6 +32,7 @@ const LoginForm = () => {
         type: 'SET_USER',
         payload: user,
       })
+      navigate('/')
     } catch (error) {
       setNotification({
         type: 'SET_NOTIFICATION',

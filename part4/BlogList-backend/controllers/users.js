@@ -1,33 +1,31 @@
-const userRouter = require('express').Router()
-const bcrypt = require('bcrypt')
-const User = require('../models/User')
+const userRouter = require("express").Router();
+const bcrypt = require("bcrypt");
+const User = require("../models/User");
 
-userRouter.get('/', async(req,res) => {
-    const users = await User
-        .find({ })
-        .populate('blogs')
-        
-    res.status(200).json(users)
-})
+userRouter.get("/", async (req, res) => {
+  const users = await User.find({}).populate("blogs");
 
-userRouter.post('/', async(req, res) => {
-    const { username, name, password } = req.body
+  res.status(200).json(users);
+});
 
-    if(password.length < 3) {
-        return res.status(400).json({ error: 'User validation failed' })
-    }
+userRouter.post("/", async (req, res) => {
+  const { username, name, password } = req.body;
 
-    const saltRounds = 10
-    const passwordHash = await bcrypt.hash(password, saltRounds);
+  if (password.length < 3) {
+    return res.status(400).json({ error: "User validation failed" });
+  }
 
-    const user = new User({
-        username,
-        name,
-        passwordHash
-    })
+  const saltRounds = 10;
+  const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    const savedUser = await user.save()
-    res.status(201).json(savedUser)
-})
+  const user = new User({
+    username,
+    name,
+    passwordHash,
+  });
 
-module.exports =  userRouter
+  const savedUser = await user.save();
+  res.status(201).json(savedUser);
+});
+
+module.exports = userRouter;

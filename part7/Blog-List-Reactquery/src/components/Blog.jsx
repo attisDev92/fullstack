@@ -1,5 +1,6 @@
 import Togglable from './Togglable'
 import blogService from '../services/blogs'
+import { Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNotification } from '../Reducers/notificationContext'
 
@@ -48,7 +49,9 @@ const Blog = ({ blog }) => {
 
   return (
     <div className='container__blog'>
-      <h4>{blog.title} </h4>
+      <h4>
+        <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>{' '}
+      </h4>
       <p>Author: {blog.author}</p>
 
       <Togglable buttonLabel1='view' buttonLabel2='hide'>
