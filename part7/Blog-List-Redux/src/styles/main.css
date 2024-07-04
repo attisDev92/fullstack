@@ -1,0 +1,66 @@
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: ghostwhite;
+  margin: 0;
+  padding: 0;
+}
+
+.containers__blogs {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 2rem;
+}
+
+.card__blog {
+  margin: 1rem;
+  padding: 1rem;
+  max-width: 30rem;
+}
+
+.blog__form__container {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.2rem;
+  max-width: 40rem;
+}
+
+.login__form__container {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 1rem;
+  max-width: 40rem;
+  align-items: center;
+  margin: 1rem;
+}
+
+.login__form__container Button {
+  max-height: 4rem;
+}
+
+.users__container {
+  max-width: 40rem;
+}
+
+.divider {
+  font-weight: 800;
+  font-size: 1.3rem;
+  padding: 2rem;
+}
+
+.nav__bar {
+  display: flex;
+  flex-flow: column ;
+}
+
+.togglabe__container {
+  padding: 1rem;
+}
+
+.menu {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 2rem;
+  width: 100%;
+  border-bottom: 2px solid darkslategrey;
+  align-items: baseline;
+}

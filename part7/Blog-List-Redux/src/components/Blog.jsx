@@ -2,6 +2,8 @@ import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { likeBlog, deleteBlog } from '../redux/blogReducer'
 import Togglable from './Togglable'
+import Card from '@mui/material/Card'
+import Button from '@mui/material/Button'
 
 const Blog = ({ blog }) => {
   const dispatch = useDispatch()
@@ -15,7 +17,7 @@ const Blog = ({ blog }) => {
   }
 
   return (
-    <div className='container__blog'>
+    <Card className='card__blog'>
       <h4>
         <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>{' '}
       </h4>
@@ -24,18 +26,19 @@ const Blog = ({ blog }) => {
       <Togglable buttonLabel1='view' buttonLabel2='hide'>
         <ul>
           <li>URL: {blog.url}</li>
-          <li>
-            Likes: {blog.likes}
-            <button onClick={handleOnClickLike}>like</button>
-          </li>
+          <li>Likes: {blog.likes}</li>
+          <Button variant='contained' onClick={handleOnClickLike}>
+            like
+          </Button>
           <li>User: {blog.user.name}</li>
         </ul>
 
-        <button onClick={handleDelete}>Delete</button>
+        <Button variant='contained' onClick={handleDelete}>
+          Delete
+        </Button>
         <br />
       </Togglable>
-      <hr />
-    </div>
+    </Card>
   )
 }
 

@@ -11,6 +11,8 @@ import Users from './components/Users'
 import UserProfile from './components/UserProfile'
 import BlogInfo from './components/BlogInfo'
 
+import Container from '@mui/material/Container'
+
 const App = () => {
   const { state, dispatch } = useUser()
   const user = state
@@ -27,7 +29,7 @@ const App = () => {
   }, [dispatch])
 
   return (
-    <div>
+    <Container>
       <h1>Blog App</h1>
       <nav>
         <Link to='/'>Home</Link>
@@ -68,7 +70,7 @@ const App = () => {
         <Route path='/login' element={<LoginForm />} />
         <Route path='/' element={<Blogs />} />
       </Routes>
-    </div>
+    </Container>
   )
 }
 

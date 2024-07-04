@@ -1,22 +1,21 @@
-import { useEffect, useRef } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { blogsInit } from './redux/blogReducer'
 import { setUser } from './redux/userReducer'
 import { getUsers } from './redux/usersReducer'
 
-import LoginForm from './components/LoginForm'
 import Blogs from './components/Blogs'
-import LogOutButton from './components/LogoutButton'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
 import Users from './components/Users'
 import UserProfile from './components/UserProfile'
 import BlogInfo from './components/BlogInfo'
+import Menu from './components/Menu'
+import Container from '@mui/material/Container'
+import Divider from '@mui/material/Divider'
 
 const App = () => {
-  const togglableRef = useRef()
   const dispatch = useDispatch()
   const user = useSelector(state => state.user)
 
@@ -31,26 +30,8 @@ const App = () => {
   }, [dispatch])
 
   return (
-    <div>
-      <nav>
-        <Link to='/'>Home</Link>
-        <Link to='/users'>Users</Link>
-        <Link to='/blogs'>Blogs</Link>
-        {user === null ? (
-          <Togglable
-            buttonLabel1={'Login'}
-            buttonLabel2={'Cancelar'}
-            ref={togglableRef}
-          >
-            <LoginForm />
-          </Togglable>
-        ) : (
-          <>
-            <p>{user.name} logged in</p>
-            <LogOutButton />
-          </>
-        )}
-      </nav>
+    <Container>
+      <Menu user={user} />
       <h1>Blog App</h1>
       <Notification />
       <Routes>
@@ -59,8 +40,10 @@ const App = () => {
           element={
             user ? (
               <>
-                <h2>Blogs</h2>
                 <BlogForm />
+                <Divider textAlign='center' className='divider'>
+                  Blogs
+                </Divider>
                 <Blogs />
               </>
             ) : (
@@ -79,7 +62,9 @@ const App = () => {
           element={
             user ? (
               <>
-                <h2>Users</h2>
+                <Divider textAlign='center' className='divider'>
+                  Users
+                </Divider>
                 <Users />
               </>
             ) : (
@@ -105,7 +90,7 @@ const App = () => {
         />
         <Route path='*' element={<div>404 Page Not Found</div>} />
       </Routes>
-    </div>
+    </Container>
   )
 }
 

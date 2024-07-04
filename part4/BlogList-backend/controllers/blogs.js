@@ -9,7 +9,8 @@ blogsRouter.get("/", async (req, res) => {
 });
 
 blogsRouter.get("/:id", async (req, res) => {
-  const blog = await Blog.findOne({ _id: req.params.id });
+  const blog = await Blog.findOne({ _id: req.params.id }).populate("user", { username: 1, name: 1 });
+  console.log(blog)
   if (blog) {
     res.status(200).json(blog);
   } else {

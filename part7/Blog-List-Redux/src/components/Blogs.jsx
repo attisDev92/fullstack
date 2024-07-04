@@ -7,7 +7,7 @@ const Blogs = () => {
   return (
     <>
       {
-        <div>
+        <div className='container__blogs'>
           {blogs.map(blog => (
             <Blog key={blog.id} blog={blog} />
           ))}

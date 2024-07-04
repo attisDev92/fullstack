@@ -1,10 +1,13 @@
 import blogService from '../services/blogs'
+import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNotification } from '../Reducers/notificationContext'
 
 const BlogInfo = () => {
   const queryClient = useQueryClient()
   const { dispatch } = useNotification()
+  const [inputComment, setInputComment] = useState('')
   const path = window.location.pathname
   const parts = path.split('/')
   const blogId = parts[parts.length - 1]
@@ -39,6 +42,19 @@ const BlogInfo = () => {
     updateBlogMutation.mutate(blogToUpdate)
   }
 
+  const commentBlogMutation = useMutation({
+    mutationFn: blogService.addComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['blogs'])
+    },
+  })
+
+  const handleSubmitComment = e => {
+    e.preventDefault()
+    commentBlogMutation.mutate(blog.id, { comment: inputComment })
+    setInputComment('')
+  }
+
   if (isLoading) {
     return <div>Loading...</div>
   }
@@ -59,6 +75,25 @@ const BlogInfo = () => {
         </li>
         <li>User: {blog.user.name}</li>
       </ul>
+      <h3>Comments</h3>
+      <form onSubmit={handleSubmitComment}>
+        <input
+          type='text'
+          value={inputComment}
+          onChange={({ target }) => setInputComment(target.value)}
+        />
+        <button>add comment</button>
+      </form>
+      {blog.comments && blog.comments.length > 0 ? (
+        <ul>
+          {blog.comments.map((comment, index) => (
+            <li key={index}>{comment}</li>
+          ))}
+        </ul>
+      ) : (
+        <div>No comments yet</div>
+      )}
+      <Link to='/blogs'>back</Link>
     </div>
   )
 }

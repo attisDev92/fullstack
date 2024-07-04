@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { loginUser } from '../redux/userReducer'
+import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
 
 const LoginForm = () => {
   const [username, setUsername] = useState('')
@@ -16,26 +18,31 @@ const LoginForm = () => {
   }
 
   return (
-    <form onSubmit={handleOnSubmit}>
-      <h2>Log in to application</h2>
-
-      <label>username: </label>
-      <input
+    <form onSubmit={handleOnSubmit} className='login__form__container'>
+      <TextField
         type='text'
-        id={'username'}
+        id='username'
+        helperText='Please enter your username'
+        label='USERNAME'
         onChange={({ target }) => setUsername(target.value)}
       />
-      <br />
 
-      <label>password: </label>
-      <input
+      <TextField
         type='text'
-        id={'password'}
+        id='password'
+        helperText='Please enter your password'
+        label='PASSWORD'
         onChange={({ target }) => setPassword(target.value)}
       />
-      <br />
 
-      <button id={'submit-login'}>login</button>
+      <Button
+        type='submit'
+        variant='contained'
+        color='success'
+        id={'submit-login'}
+      >
+        Login
+      </Button>
     </form>
   )
 }

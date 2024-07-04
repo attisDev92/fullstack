@@ -37,6 +37,11 @@ const destroy = async id => {
   return res.data
 }
 
+const addComment = async (id, comment) => {
+  const res = await axios.post(`${baseUrl}/${id}/comment`, comment, getConfig())
+  return res.data
+}
+
 export default {
   getAll,
   getBlog,
@@ -44,4 +49,5 @@ export default {
   update,
   destroy,
   setToken,
+  addComment
 }
