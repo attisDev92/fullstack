@@ -121,6 +121,10 @@ const typeDefs = `
       author: String!
       genres: [String]
     ): Book
+    editAuthor(
+      author: String!
+      born: Int!
+    ): Author
   }
 `
 
@@ -147,7 +151,7 @@ const resolvers = {
       if (books.find ( b => b.title === args.title)) {
         throw new GraphQLError('the book already exist', {
           extensions: {
-            code: 'BAD_USER_INPUT',
+            code: 'BAD_BOOK_INPUT',
             invalidArgs: args.title
           }
         })
@@ -161,6 +165,20 @@ const resolvers = {
       books = books.concat(newBook)
       return newBook
     },
+    editAuthor: (root, args) => {
+      let author = authors.find(a => a.name === args.author) 
+      if (!author) {
+        throw new GraphQLError('the author doesn\'t exist', {
+          extensions: {
+            code: 'BAD_AUTHOR_INPUT',
+            invalidArgs: args.author
+          }
+        })
+      }
+      author = { ...author, born: args.born }
+      authors = authors.map(a => a.name === args.author ? author : a)
+      return author
+    }
   }
 }
 
