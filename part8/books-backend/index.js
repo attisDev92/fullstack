@@ -94,6 +94,7 @@ const typeDefs = `
     name: String!
     id: ID!
     born: Int
+    books: [Book]
   }
   
   type Book {
@@ -143,9 +144,15 @@ const resolvers = {
      }
      return filterBooks
     },
-    allAuthors: () => authors,
+    allAuthors: () => authors
   },
   
+  Author: {
+    books: (root) => {
+      return books.filter(book => book.author === root.name)
+    }
+  },
+
   Mutation: {
     addBook: (root, args) => {
       if (books.find ( b => b.title === args.title)) {
