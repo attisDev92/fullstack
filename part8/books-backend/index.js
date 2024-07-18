@@ -1,7 +1,10 @@
-import { ApolloServer } from '@apollo/server'
-import { startStandaloneServer } from '@apollo/server/standalone'
-import { GraphQLError } from 'graphql'
-import { v1 as uuid } from 'uuid'
+const { ApolloServer } = require('@apollo/server')
+const { startStandaloneServer } = require( '@apollo/server/standalone')
+// const { v1 } = require( 'uuid')
+const typeDefs = require('./src/schemas/schemas')
+const resolvers = require('./src/resolvers/resolvers')
+
+require('./src/config/db')
 
 let authors = [
   {
@@ -31,25 +34,25 @@ let authors = [
 
 let books = [
   {
-    title: 'Clean Code',
-    published: 2008,
-    author: 'Robert Martin',
-    id: "afa5b6f4-344d-11e9-a414-719c6709cf3e",
-    genres: ['refactoring']
+    "title": 'Clean Code',
+    "published": 2008,
+    "author": 'Robert Martin',
+    "id": "afa5b6f4-344d-11e9-a414-719c6709cf3e",
+    "genres": ['refactoring']
   },
   {
-    title: 'Agile software development',
-    published: 2002,
-    author: 'Robert Martin',
-    id: "afa5b6f5-344d-11e9-a414-719c6709cf3e",
-    genres: ['agile', 'patterns', 'design']
+    "title": "Agile software development",
+    "published": 2002,
+    "author": "Robert Martin",
+    "id": "afa5b6f5-344d-11e9-a414-719c6709cf3e",
+    "genres": ["agile", "patterns", "design"]
   },
   {
-    title: 'Refactoring, edition 2',
-    published: 2018,
-    author: 'Martin Fowler',
-    id: "afa5de00-344d-11e9-a414-719c6709cf3e",
-    genres: ['refactoring']
+    "title": "Refactoring, edition 2",
+    "published": 2018,
+    "author": "Martin Fowler",
+    "id": "afa5de00-344d-11e9-a414-719c6709cf3e",
+    "genres": ["refactoring"]
   },
   {
     title: 'Refactoring to patterns',
@@ -80,114 +83,6 @@ let books = [
     genres: ['classic', 'revolution']
   },
 ]
-
-
-
-const typeDefs = `
-
-  enum YesNo {
-    YES
-    NO
-  }
-
-  type Author {
-    name: String!
-    id: ID!
-    born: Int
-    books: [Book]
-  }
-  
-  type Book {
-    title: String!
-    published: Int!
-    author: String!
-    id: ID!
-    genres: [String]
-  }
-
-  type Query {
-    authorsCount: Int!
-    booksCount: Int!
-    allBooks(
-      author: String
-      genre: String
-    ): [Book!]!
-    allAuthors: [Author!]!
-  }
-
-  type Mutation {
-    addBook(
-      title: String!
-      published: Int
-      author: String!
-      genres: [String]
-    ): Book
-    editAuthor(
-      author: String!
-      born: Int!
-    ): Author
-  }
-`
-
-const resolvers = {
-
-  Query: {
-    authorsCount: () => authors.length,
-    booksCount: () => books.length,
-    allBooks: (root, args) => {
-     let filterBooks = books
-     if (args.author) {
-      filterBooks = filterBooks.filter(b => b.author === args.author)
-     }
-     if (args.genre) {
-      filterBooks = filterBooks.filter(b => b.genres.includes(args.genre))
-     }
-     return filterBooks
-    },
-    allAuthors: () => authors
-  },
-  
-  Author: {
-    books: (root) => {
-      return books.filter(book => book.author === root.name)
-    }
-  },
-
-  Mutation: {
-    addBook: (root, args) => {
-      if (books.find ( b => b.title === args.title)) {
-        throw new GraphQLError('the book already exist', {
-          extensions: {
-            code: 'BAD_BOOK_INPUT',
-            invalidArgs: args.title
-          }
-        })
-      }
-      let author = authors.find(a => a.name === args.author);
-      if(!author) {
-        author = { name: args.author, id: uuid() }
-        authors = authors.concat(author)
-      }
-      const newBook = { ...args, id: uuid()}
-      books = books.concat(newBook)
-      return newBook
-    },
-    editAuthor: (root, args) => {
-      let author = authors.find(a => a.name === args.author) 
-      if (!author) {
-        throw new GraphQLError('the author doesn\'t exist', {
-          extensions: {
-            code: 'BAD_AUTHOR_INPUT',
-            invalidArgs: args.author
-          }
-        })
-      }
-      author = { ...author, born: args.born }
-      authors = authors.map(a => a.name === args.author ? author : a)
-      return author
-    }
-  }
-}
 
 const server = new ApolloServer ({
   typeDefs,
