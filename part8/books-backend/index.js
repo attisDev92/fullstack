@@ -3,6 +3,8 @@ const { startStandaloneServer } = require( '@apollo/server/standalone')
 // const { v1 } = require( 'uuid')
 const typeDefs = require('./src/schemas/schemas')
 const resolvers = require('./src/resolvers/resolvers')
+const User = require('./src/models/User')
+const jwt = require('jsonwebtoken')
 
 require('./src/config/db')
 
@@ -91,6 +93,16 @@ const server = new ApolloServer ({
 
 startStandaloneServer(server, {
   listen: { port: 4000 },
+  context: async({req, res}) => {
+    const auth = req ? req.headers.authorization : null
+    if(auth && auth.startsWith('Bearer ')) {
+      const decodeToken = jwt.verify(
+        auth.substring(7), process.env.SECRET
+      )
+      const currentUser = await User.findById(decodeToken.id)
+      return { currentUser }
+    }
+  },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`)
 })
