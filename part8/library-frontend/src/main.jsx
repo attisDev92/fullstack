@@ -1,10 +1,31 @@
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+} from "@apollo/client";
 
-const client = new ApolloClient({
+import { setContext } from "@apollo/client/link/context";
+
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem("books-app");
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : null,
+    },
+  };
+});
+
+const httpLink = createHttpLink({
   uri: "http://localhost:4000/",
+});
+console.log(httpLink);
+const client = new ApolloClient({
   cache: new InMemoryCache(),
+  link: authLink.concat(httpLink),
 });
 
 ReactDOM.createRoot(document.getElementById("root")).render(

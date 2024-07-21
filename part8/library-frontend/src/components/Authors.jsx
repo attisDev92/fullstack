@@ -2,7 +2,7 @@ import { ALL_AUTHORS } from "../queries";
 import { useQuery } from "@apollo/client";
 import AuthorBornForm from "./AuthorBornForm";
 
-const Authors = (props) => {
+const Authors = ({ show, token }) => {
   const { loading, error, data } = useQuery(ALL_AUTHORS);
 
   if (loading) {
@@ -13,7 +13,7 @@ const Authors = (props) => {
   }
   const authors = data.allAuthors;
 
-  if (!props.show) {
+  if (!show) {
     return null;
   }
 
@@ -36,7 +36,7 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <AuthorBornForm authors={authors} />
+      {token ? <AuthorBornForm authors={authors} /> : null}
     </div>
   );
 };
