@@ -22,7 +22,7 @@ const authLink = setContext((_, { headers }) => {
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/",
 });
-console.log(httpLink);
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: authLink.concat(httpLink),

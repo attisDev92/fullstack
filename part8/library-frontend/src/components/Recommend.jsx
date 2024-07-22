@@ -1,18 +1,29 @@
 import { useQuery } from "@apollo/client";
 import { USER, ALL_BOOKS } from "../queries";
+import { useEffect, useState } from "react";
 
 const Recommend = (props) => {
+  const [userFavoriteGenre, setUserFavoriteGenre] = useState(null);
+
   const {
     loading: loadingUser,
     error: errorUser,
     data: dataUser,
   } = useQuery(USER);
 
+  useEffect(() => {
+    if (dataUser && dataUser.me) {
+      setUserFavoriteGenre(dataUser.me.favoriteGenre);
+    }
+  }, [dataUser]); //eslint-disable-line
+
   const {
     loading: loadingBooks,
     error: errorBooks,
     data: dataBooks,
-  } = useQuery(ALL_BOOKS);
+  } = useQuery(ALL_BOOKS, {
+    variables: { genre: userFavoriteGenre },
+  });
 
   if (loadingBooks || loadingUser) {
     return <div>Loading...</div>;
@@ -26,10 +37,7 @@ const Recommend = (props) => {
     return <div>Error fetching authors: {errorUser.message}</div>;
   }
 
-  const user = dataUser.me;
-  const books = dataBooks.allBooks.filter((b) =>
-    b.genres.includes(user.favoriteGenre)
-  );
+  const books = dataBooks ? dataBooks.allBooks : [];
 
   if (!props.show) {
     return null;
