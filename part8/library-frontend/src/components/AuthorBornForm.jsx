@@ -1,24 +1,22 @@
-import { useState } from "react";
-import { useMutation } from "@apollo/client";
-import { ALL_AUTHORS, EDIT_BORN } from "../queries";
+import { useField } from "../hooks/useField";
+import { useEditAuthor } from "../hooks/useAuthor";
 
 const AuthorBornForm = ({ authors }) => {
-  const [name, setName] = useState("");
-  const [born, setBorn] = useState(0);
-
-  const [editAuthorBorn, { error }] = useMutation(EDIT_BORN, {
-    refetchQueries: [{ query: ALL_AUTHORS }],
-    onError: (error) => console.log(error),
-  });
+  const name = useField();
+  const bornInput = useField("number", 0);
+  const born = { ...bornInput, reset: "__" };
+  const { editAuthorBorn, error } = useEditAuthor();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
-      editAuthorBorn({ variables: { name, born: parseInt(born) } });
-      setName("");
-      setBorn(0);
-    } catch (e) {
-      console.error(e);
+      editAuthorBorn({
+        variables: { name: name.value, born: parseInt({ born: born.value }) },
+      });
+      name.reset();
+      bornInput.reset();
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -26,19 +24,14 @@ const AuthorBornForm = ({ authors }) => {
     <>
       <form onSubmit={handleSubmit}>
         Name:{" "}
-        <select onChange={({ target }) => setName(target.value)}>
+        <select onChange={name.onChange} value={name.value}>
           {authors.map((a) => (
             <option key={a.name} value={a.name}>
               {a.name}
             </option>
           ))}
         </select>
-        Born:{" "}
-        <input
-          type="number"
-          value={born}
-          onChange={({ target }) => setBorn(target.value)}
-        />
+        Born: <input {...born} />
         <button type="submit">Editar</button>
       </form>
       {error && <p>Error: {error.message}</p>}

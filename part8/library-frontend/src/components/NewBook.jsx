@@ -1,45 +1,47 @@
 import { useState } from "react";
-import { useMutation } from "@apollo/client";
-import { ALL_BOOKS, ALL_AUTHORS, CREATE_BOOK } from "../queries";
+import { useField } from "../hooks/useField";
+import { useBooks } from "../hooks/useBooks";
 
-const NewBook = (props) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [published, setPublished] = useState("");
-  const [genre, setGenre] = useState("");
+const NewBook = ({ show }) => {
+  const titleInput = useField();
+  const title = { ...titleInput, reset: "__" };
+  const authorInput = useField();
+  const author = { ...authorInput, reset: "__" };
+  const publishedInput = useField("number", 0);
+  const published = { ...publishedInput, reset: "__" };
+  const genreInput = useField();
+  const genre = { ...genreInput, reset: "__" };
   const [genres, setGenres] = useState([]);
+  const { createBook, mutationError } = useBooks();
 
-  const [createBook, { error }] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
-    onError: (error) => {
-      console.error(error);
-    },
-  });
-
-  if (!props.show) {
+  if (!show) {
     return null;
   }
 
   const submit = async (event) => {
     event.preventDefault();
-    console.log("add book...");
     try {
       await createBook({
-        variables: { title, author, published: parseInt(published), genres },
+        variables: {
+          title: title.value,
+          author: author.value,
+          published: parseInt(published.value),
+          genres,
+        },
       });
-      setTitle("");
-      setPublished("");
-      setAuthor("");
+      titleInput.reset();
+      publishedInput.reset();
+      authorInput.reset();
+      genreInput.reset();
       setGenres([]);
-      setGenre("");
     } catch (e) {
       console.error(e);
     }
   };
 
   const addGenre = () => {
-    setGenres(genres.concat(genre));
-    setGenre("");
+    setGenres(genres.concat(genre.value));
+    genreInput.reset();
   };
 
   return (
@@ -47,31 +49,18 @@ const NewBook = (props) => {
       <form onSubmit={submit}>
         <div>
           title
-          <input
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
+          <input {...title} />
         </div>
         <div>
           author
-          <input
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
+          <input {...author} />
         </div>
         <div>
           published
-          <input
-            type="number"
-            value={published}
-            onChange={({ target }) => setPublished(target.value)}
-          />
+          <input {...published} />
         </div>
         <div>
-          <input
-            value={genre}
-            onChange={({ target }) => setGenre(target.value)}
-          />
+          <input {...genre} />
           <button onClick={addGenre} type="button">
             add genre
           </button>
@@ -79,7 +68,7 @@ const NewBook = (props) => {
         <div>genres: {genres.join(" ")}</div>
         <button type="submit">create book</button>
       </form>
-      {error && <p>Error: {error.message}</p>}
+      {mutationError && <p>Error: {mutationError.message}</p>}
     </div>
   );
 };

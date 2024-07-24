@@ -1,108 +1,99 @@
-const { ApolloServer } = require('@apollo/server')
-const { startStandaloneServer } = require( '@apollo/server/standalone')
-// const { v1 } = require( 'uuid')
-const typeDefs = require('./src/schemas/schemas')
-const resolvers = require('./src/resolvers/resolvers')
-const User = require('./src/models/User')
-const jwt = require('jsonwebtoken')
+const { ApolloServer } = require('@apollo/server');
+const { ApolloServerPluginDrainHttpServer } = require('@apollo/server/plugin/drainHttpServer');
+const { expressMiddleware } = require('@apollo/server/express4');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
+const { WebSocketServer } = require('ws');
+const { useServer } = require('graphql-ws/lib/use/ws');
+const { PubSub } = require('graphql-subscriptions');
+const express = require('express');
+const cors = require('cors');
+const http = require('http');
+const jwt = require('jsonwebtoken');
 
-require('./src/config/db')
+const typeDefs = require('./graphql/typeDefs');
+const resolvers = require('./graphql/resolvers');
+const User = require('./models/User');
 
-let authors = [
-  {
-    name: 'Robert Martin',
-    id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
-    born: 1952,
-  },
-  {
-    name: 'Martin Fowler',
-    id: "afa5b6f0-344d-11e9-a414-719c6709cf3e",
-    born: 1963
-  },
-  {
-    name: 'Fyodor Dostoevsky',
-    id: "afa5b6f1-344d-11e9-a414-719c6709cf3e",
-    born: 1821
-  },
-  { 
-    name: 'Joshua Kerievsky', // birthyear not known
-    id: "afa5b6f2-344d-11e9-a414-719c6709cf3e",
-  },
-  { 
-    name: 'Sandi Metz', // birthyear not known
-    id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
-  },
-]
+require('dotenv').config();
+require('./config/db'); // Conectar a la base de datos
 
-let books = [
-  {
-    "title": 'Clean Code',
-    "published": 2008,
-    "author": 'Robert Martin',
-    "id": "afa5b6f4-344d-11e9-a414-719c6709cf3e",
-    "genres": ['refactoring']
-  },
-  {
-    "title": "Agile software development",
-    "published": 2002,
-    "author": "Robert Martin",
-    "id": "afa5b6f5-344d-11e9-a414-719c6709cf3e",
-    "genres": ["agile", "patterns", "design"]
-  },
-  {
-    "title": "Refactoring, edition 2",
-    "published": 2018,
-    "author": "Martin Fowler",
-    "id": "afa5de00-344d-11e9-a414-719c6709cf3e",
-    "genres": ["refactoring"]
-  },
-  {
-    title: 'Refactoring to patterns',
-    published: 2008,
-    author: 'Joshua Kerievsky',
-    id: "afa5de01-344d-11e9-a414-719c6709cf3e",
-    genres: ['refactoring', 'patterns']
-  },  
-  {
-    title: 'Practical Object-Oriented Design, An Agile Primer Using Ruby',
-    published: 2012,
-    author: 'Sandi Metz',
-    id: "afa5de02-344d-11e9-a414-719c6709cf3e",
-    genres: ['refactoring', 'design']
-  },
-  {
-    title: 'Crime and punishment',
-    published: 1866,
-    author: 'Fyodor Dostoevsky',
-    id: "afa5de03-344d-11e9-a414-719c6709cf3e",
-    genres: ['classic', 'crime']
-  },
-  {
-    title: 'Demons',
-    published: 1872,
-    author: 'Fyodor Dostoevsky',
-    id: "afa5de04-344d-11e9-a414-719c6709cf3e",
-    genres: ['classic', 'revolution']
-  },
-]
+const start = async () => {
+  const app = express();
+  const httpServer = http.createServer(app);
 
-const server = new ApolloServer ({
-  typeDefs,
-  resolvers
-})
+  const pubSub = new PubSub();
 
-startStandaloneServer(server, {
-  listen: { port: 4000 },
-  context: async({req, res}) => {
-    const auth = req ? req.headers.authorization : null
-    if(auth && auth.startsWith('Bearer ')) {
-      const decodeToken = jwt.verify(
-        auth.substring(7), process.env.SECRET
-      )
-      const currentUser = await User.findById(decodeToken.id)
-      return { currentUser }
-    }
-  },
-}).then(({ url }) => {
-  console.log(`Server ready at ${url}`)
-})
+  const schema = makeExecutableSchema({
+    typeDefs,
+    resolvers,
+  });
+
+  const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: '/graphql',
+  });
+
+  const serverCleanup = useServer(
+    {
+      schema,
+      onConnect: async (ctx) => {
+        console.log('WebSocket connected');
+        return { pubSub };
+      },
+      onDisconnect: async (ctx) => {
+        console.log('WebSocket disconnected');
+      },
+    },
+    wsServer
+  );
+
+  const server = new ApolloServer({
+    schema,
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            },
+          };
+        },
+      },
+    ],
+  });
+
+  await server.start();
+
+  app.use(
+    '/graphql',
+    cors(),
+    express.json(),
+    expressMiddleware(server, {
+      context: async ({ req }) => {
+        const auth = req ? req.headers.authorization : null;
+        if (auth && auth.startsWith('Bearer ')) {
+          const token = auth.substring(7);
+          try {
+            const decodedToken = jwt.verify(token, process.env.SECRET);
+            const currentUser = await User.findById(decodedToken.id);
+            return { currentUser, pubSub };
+          } catch (error) {
+            console.error('Error decoding token:', error.message);
+            return { pubSub };
+          }
+        }
+
+        return { pubSub };
+      },
+    })
+  );
+
+  const PORT = 4000;
+
+  httpServer.listen(PORT, () => {
+    console.log(`server start on http://localhost:${PORT}/graphql port`);
+  });
+};
+
+start();

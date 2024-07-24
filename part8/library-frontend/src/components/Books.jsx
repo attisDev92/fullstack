@@ -1,36 +1,19 @@
-import { ALL_BOOKS } from "../queries";
-import { useQuery } from "@apollo/client";
-import { useState, useEffect } from "react";
+import { useBooks } from "../hooks/useBooks";
 
-const Books = (props) => {
-  const [genre, setGenre] = useState(null);
+const Books = ({ show }) => {
+  const { loading, queryError, refetch, books, booksGenres, setGenre } =
+    useBooks();
 
-  const { loading, error, data, refetch } = useQuery(ALL_BOOKS, {
-    variables: genre ? { genre } : {},
-  });
-
-  const [books, setBooks] = useState([]);
-  const [booksGenres, setBooksGenres] = useState([]);
-
-  useEffect(() => {
-    if (data && data.allBooks) {
-      setBooks(data.allBooks);
-      const allGenres = data.allBooks.reduce((totalGenres, book) => {
-        return totalGenres.concat(book.genres);
-      }, []);
-      setBooksGenres([...new Set(allGenres)]);
-    }
-  }, [data]);
+  if (!show) {
+    return null;
+  }
 
   if (loading) {
     return <>Loading ...</>;
   }
-  if (error) {
-    return <>Error: {error.message}</>;
-  }
 
-  if (!props.show) {
-    return null;
+  if (queryError) {
+    return <>Error: {queryError.message}</>;
   }
 
   const handleSetGenre = (genre) => {
