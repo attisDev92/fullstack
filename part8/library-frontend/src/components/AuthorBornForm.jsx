@@ -3,18 +3,20 @@ import { useEditAuthor } from "../hooks/useAuthor";
 
 const AuthorBornForm = ({ authors }) => {
   const name = useField();
-  const bornInput = useField("number", 0);
-  const born = { ...bornInput, reset: "__" };
+  const born = useField("number", 0);
   const { editAuthorBorn, error } = useEditAuthor();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     try {
       editAuthorBorn({
-        variables: { name: name.value, born: parseInt({ born: born.value }) },
+        variables: {
+          name: name.inputProperties.value,
+          born: parseInt({ born: born.inputProperties.value }),
+        },
       });
       name.reset();
-      bornInput.reset();
+      born.reset();
     } catch (error) {
       console.error(error);
     }
@@ -24,14 +26,17 @@ const AuthorBornForm = ({ authors }) => {
     <>
       <form onSubmit={handleSubmit}>
         Name:{" "}
-        <select onChange={name.onChange} value={name.value}>
+        <select
+          onChange={name.inputProperties.onChange}
+          value={name.inputProperties.value}
+        >
           {authors.map((a) => (
             <option key={a.name} value={a.name}>
               {a.name}
             </option>
           ))}
         </select>
-        Born: <input {...born} />
+        Born: <input {...born.inputProperties} />
         <button type="submit">Editar</button>
       </form>
       {error && <p>Error: {error.message}</p>}

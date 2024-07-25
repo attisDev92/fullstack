@@ -2,21 +2,22 @@ import { useField } from "../hooks/useField";
 import { useLogin } from "../hooks/useUser";
 
 const LoginForm = ({ setToken, show, setPage }) => {
-  const usernameInput = useField();
-  const username = { ...usernameInput, reset: "__" };
-  const passwordInput = useField();
-  const password = { ...passwordInput, reset: "__" };
+  const username = useField();
+  const password = useField();
 
   const [login] = useLogin(setToken);
 
   const handleLogin = (e) => {
     e.preventDefault();
     login({
-      variables: { username: username.value, password: password.value },
+      variables: {
+        username: username.inputProperties.value,
+        password: password.inputProperties.value,
+      },
     });
     setPage("books");
-    usernameInput.reset();
-    passwordInput.reset();
+    username.reset();
+    password.reset();
   };
 
   if (!show) {
@@ -25,8 +26,8 @@ const LoginForm = ({ setToken, show, setPage }) => {
 
   return (
     <form onSubmit={handleLogin}>
-      username: <input {...username} />
-      password: <input {...password} />
+      username: <input {...username.inputProperties} />
+      password: <input {...password.inputProperties} />
       <input type="submit" value="login" />
     </form>
   );

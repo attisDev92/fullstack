@@ -12,9 +12,11 @@ export const useField = (type = "text", initialValue = '' ) => {
   }
 
   return {
-    type,
-    value,
-    onChange,
+    inputProperties :{
+      type,
+      value,
+      onChange,
+    },
     reset
   }
 }

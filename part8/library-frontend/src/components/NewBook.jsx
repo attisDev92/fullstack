@@ -1,18 +1,14 @@
 import { useState } from "react";
 import { useField } from "../hooks/useField";
-import { useBooks } from "../hooks/useBooks";
+import { useCreateBook } from "../hooks/useBooks";
 
 const NewBook = ({ show }) => {
-  const titleInput = useField();
-  const title = { ...titleInput, reset: "__" };
-  const authorInput = useField();
-  const author = { ...authorInput, reset: "__" };
-  const publishedInput = useField("number", 0);
-  const published = { ...publishedInput, reset: "__" };
-  const genreInput = useField();
-  const genre = { ...genreInput, reset: "__" };
+  const title = useField();
+  const author = useField();
+  const published = useField("number", 0);
+  const genre = useField();
   const [genres, setGenres] = useState([]);
-  const { createBook, mutationError } = useBooks();
+  const { createBook, error } = useCreateBook();
 
   if (!show) {
     return null;
@@ -23,16 +19,16 @@ const NewBook = ({ show }) => {
     try {
       await createBook({
         variables: {
-          title: title.value,
-          author: author.value,
+          title: title.inputProperties.value,
+          author: author.inputProperties.value,
           published: parseInt(published.value),
           genres,
         },
       });
-      titleInput.reset();
-      publishedInput.reset();
-      authorInput.reset();
-      genreInput.reset();
+      title.reset();
+      published.reset();
+      author.reset();
+      genre.reset();
       setGenres([]);
     } catch (e) {
       console.error(e);
@@ -40,8 +36,8 @@ const NewBook = ({ show }) => {
   };
 
   const addGenre = () => {
-    setGenres(genres.concat(genre.value));
-    genreInput.reset();
+    setGenres(genres.concat(genre.inputProperties.value));
+    genre.reset();
   };
 
   return (
@@ -49,18 +45,18 @@ const NewBook = ({ show }) => {
       <form onSubmit={submit}>
         <div>
           title
-          <input {...title} />
+          <input {...title.inputProperties} />
         </div>
         <div>
           author
-          <input {...author} />
+          <input {...author.inputProperties} />
         </div>
         <div>
           published
-          <input {...published} />
+          <input {...published.inputProperties} />
         </div>
         <div>
-          <input {...genre} />
+          <input {...genre.inputProperties} />
           <button onClick={addGenre} type="button">
             add genre
           </button>
@@ -68,7 +64,7 @@ const NewBook = ({ show }) => {
         <div>genres: {genres.join(" ")}</div>
         <button type="submit">create book</button>
       </form>
-      {mutationError && <p>Error: {mutationError.message}</p>}
+      {error && <p>Error: {error.message}</p>}
     </div>
   );
 };
